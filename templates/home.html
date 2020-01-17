@@ -1,0 +1,81 @@
+{% extends "bootstrap/base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Logic Analyser{% endblock %}
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
+{% endblock %}
+{% block content %}
+<style>
+    body {
+    background-color: #fefee6;
+}
+</style>
+<center>
+<div>
+    <h2>Enter your statement</h2>
+    <li>negations can be represented as 'not', '-', '~', '!'</li>
+    <li>-> can be represented as '->'</li>
+    <li><-> can be represented as '<->'</li>
+    <li>and can be represented as 'and', '.', '&', '*'</li>
+    <li>or can be represented as 'or', '+', '|'</li>
+
+</div>
+    <br><br>
+
+<div class="content-section">
+    <form method="POST" action="">
+        <dl>
+            {{wtf.quick_form(form)}}
+        </dl>
+        <!--
+        {{form.hidden_tag()}}
+
+
+        <div class="form-group">
+
+
+            {% if form.input.errors %}
+            {{ form.input(class="form")}}
+            {% endif %}
+
+            {{form.input(class="form-control form-control-lg")}}
+        </div>
+
+
+        <div class="form-group">
+            {{form.submit(class="btn btn-outline-info")}}
+
+        </div>
+        -->
+    </form>
+</div>
+{% if error %}
+<div class="alert alert-danger" role="alert">
+  {{error}}
+</div>
+{% endif %}
+
+
+<div class=page>
+
+    {% if table != None %}
+    {{ table|safe }}
+    {% endif %}
+
+</div>
+{% if desc %}
+<div class="alert alert-info" role="alert">
+  {{desc}}
+</div>
+{% endif %}
+{% if s1 %}
+<div class="alert alert-warning" role="alert">
+  {{s1}}<br>{{s2}}<br>{{s3}}<br>{{s4}}<br>
+</div>
+{% endif %}
+
+<a href="https://forms.gle/GTznLxShdGjmuBTQ6"><font size="7">Submit Feedback</font></a>
+</center>
+{% endblock %}
