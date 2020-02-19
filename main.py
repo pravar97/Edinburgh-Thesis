@@ -63,7 +63,7 @@ class Parser:
     def parseStmtR(self):
 
         token = self.getToken()
-        if token == '->' or token == '<->':
+        if token == '→' or token == '↔':
             self.parseImp()
             lhs = self.parseStmt1()
             op = self.getToken()
@@ -84,7 +84,7 @@ class Parser:
 
     def parseStmt1R(self):
         token = self.getToken()
-        if token == '|':
+        if token == '∨':
             self.i += 1
             lhs = self.parseStmt2()
             op = self.getToken()
@@ -105,7 +105,7 @@ class Parser:
 
     def parseStmt2R(self):
         token = self.getToken()
-        if token == '&':
+        if token == '∧':
             self.i += 1
             lhs = self.parseStmt3()
             op = self.getToken()
@@ -117,7 +117,7 @@ class Parser:
 
     def parseStmt3(self):
         token = self.getToken()
-        if token == '~':
+        if token == '¬':
             self.i += 1
             return(NegOP(self.parseStmt3()))
         elif token == '(':
@@ -130,16 +130,16 @@ class Parser:
 
     def parseImp(self):
         token = self.getToken()
-        if token == '->':
+        if token == '→':
             self.i += 1
         else:
-            self.expect('<->')
+            self.expect('↔')
 
     def parseIdent(self):
         token = self.getToken()
         if self.end:
             raise Exception("Unexpected end of statement")
-        if token not in ['(', ')', '~', '&', '|', '->', '<->']:
+        if token not in ['(', ')', '¬', '∧', '∨', '→', '↔']:
             self.i += 1
             return token
         else:
@@ -174,13 +174,13 @@ def tokenize(stream):
             c2 = 'a'
             c3 = 'a'
             c4 = 'a'
-        if c == '+' or c == '|':
+        if c == '+' or c == '∨' or c == '|':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:
                 raise Exception("Too many atoms!")
             tokens.append(token)
-            tokens.append("|")
+            tokens.append("∨")
 
             token = ""
         elif c.lower() == 'o' and not (' '+token)[-1].isalpha() and c2.lower() == 'r' and not c3.isalpha():
@@ -189,17 +189,35 @@ def tokenize(stream):
             if identcount > 13:
                 raise Exception("Too many atoms!")
             tokens.append(token)
-            tokens.append("|")
+            tokens.append("∨")
 
             token = ""
             i += 1
-        elif c == '.' or c == '*' or c == '&':
+        elif c == '.' or c == '*' or c == '∧' or c == '&':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:
                 raise Exception("Too many atoms!")
             tokens.append(token)
-            tokens.append("&")
+            tokens.append("∧")
+
+            token = ""
+        elif c == '→':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:
+                raise Exception("Too many atoms!")
+            tokens.append(token)
+            tokens.append("→")
+
+            token = ""
+        elif c == '↔':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:
+                raise Exception("Too many atoms!")
+            tokens.append(token)
+            tokens.append("↔")
 
             token = ""
         elif c.lower() == 'a' and not (' '+token)[-1].isalpha() and c2.lower() == 'n' and c3.lower() == 'd' and not c4.isalpha():
@@ -208,7 +226,7 @@ def tokenize(stream):
             if identcount > 13:
                 raise Exception("Too many atoms!")
             tokens.append(token)
-            tokens.append("&")
+            tokens.append("∧")
             token = ""
             i += 2
 
@@ -230,34 +248,34 @@ def tokenize(stream):
             tokens.append(")")
 
             token = ""
-        elif c == '<' and c2 == '-' and c3 == '>':
+        elif c == '<' and (c2 == '-' or c2 == '=') and c3 == '>':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:
                 raise Exception("Too many atoms!")
             tokens.append(token)
-            tokens.append("<->")
+            tokens.append("↔")
             i += 2
 
             token = ""
 
-        elif c == '-' and c2 == '>':
+        elif (c == '-' or c == '=') and c2 == '>':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:
                 raise Exception("Too many atoms!")
             tokens.append(token)
-            tokens.append("->")
+            tokens.append("→")
             i += 1
 
             token = ""
-        elif c == '!' or c == '~' or c == '-':
+        elif c == '!' or c == '~' or c == '-' or c == '¬':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:
                 raise Exception("Too many atoms!")
             tokens.append(token)
-            tokens.append("~")
+            tokens.append("¬")
 
             token = ""
         elif c.lower() == 'n' and not (' '+token)[-1].isalpha() and c2.lower() == 'o' and c3.lower() == 't' and not c4.isalpha():
@@ -266,7 +284,7 @@ def tokenize(stream):
             if identcount > 13:
                 raise Exception("Too many atoms!")
             tokens.append(token)
-            tokens.append("~")
+            tokens.append("¬")
             token = ""
             i += 2
         elif c.isspace():
@@ -319,13 +337,13 @@ class ast:
         if isinstance(tree, BinOp):
             lhs = self.isTrue(tree.lhs)
             rhs = self.isTrue(tree.rhs)
-            if tree.op == '|':
+            if tree.op == '∨':
                 return lhs or rhs
-            elif tree.op == '&':
+            elif tree.op == '∧':
                 return lhs and rhs
-            elif tree.op == '->':
+            elif tree.op == '→':
                 return (not lhs) or rhs
-            elif tree.op == '<->':
+            elif tree.op == '↔':
                 return (not lhs or rhs) and (lhs or not rhs)
         elif isinstance(tree, NegOP):
             return not self.isTrue(tree.stmt)
@@ -369,10 +387,10 @@ def rmDI(tree):
             return NegOP(rmDI(tree.stmt))
 
     if isinstance(tree, BinOp):
-        if tree.op == '<->':
+        if tree.op == '↔':
             a = rmDI(tree.lhs)
             b = rmDI(tree.rhs)
-            return BinOp(BinOp(NegOP(a), '|', b), '&', BinOp(a, '|', NegOP(b)))
+            return BinOp(BinOp(a, '→', b), '∧', BinOp(b, '→', a))
         return BinOp(rmDI(tree.lhs), tree.op, rmDI(tree.rhs))
     return tree
 
@@ -380,10 +398,10 @@ def rmSI(tree):
     if isinstance(tree, NegOP):
         return NegOP(rmSI(tree.stmt))
     if isinstance(tree, BinOp):
-        if tree.op == '->':
+        if tree.op == '→':
             a = rmSI(tree.lhs)
             b = rmSI(tree.rhs)
-            return BinOp(NegOP(a), '|', b)
+            return BinOp(NegOP(a), '∨', b)
         return BinOp(rmSI(tree.lhs), tree.op, rmSI(tree.rhs))
     return tree
 
@@ -391,10 +409,10 @@ def rmB(tree):
 
     if isinstance(tree, NegOP):
         if isinstance(tree.stmt, BinOp):
-            if tree.stmt.op == '|':
-                return rmB(BinOp(NegOP(rmB(tree.stmt.lhs)), '&', NegOP(rmB(tree.stmt.rhs))))
+            if tree.stmt.op == '∨':
+                return rmB(BinOp(NegOP(rmB(tree.stmt.lhs)), '∧', NegOP(rmB(tree.stmt.rhs))))
             else:
-                return rmB(BinOp(NegOP(rmB(tree.stmt.lhs)), '|', NegOP(rmB(tree.stmt.rhs))))
+                return rmB(BinOp(NegOP(rmB(tree.stmt.lhs)), '∨', NegOP(rmB(tree.stmt.rhs))))
         else:
             return NegOP(rmB(tree.stmt))
 
@@ -416,18 +434,30 @@ def rmN(tree):
 def genCNF(tree):
 
     if isinstance(tree, BinOp):
-        if tree.op == '|':
+        if tree.op == '∨':
             if isinstance(tree.lhs, BinOp):
-                if tree.lhs.op == '&':
-                    return BinOp(BinOp(genCNF(tree.lhs.lhs), '|', genCNF(tree.rhs)), '&', BinOp(genCNF(tree.lhs.rhs), '|', genCNF(tree.rhs)))
+                if tree.lhs.op == '∧':
+                    return BinOp(BinOp(genCNF(tree.lhs.lhs), '∨', genCNF(tree.rhs)), '∧', BinOp(genCNF(tree.lhs.rhs), '∨', genCNF(tree.rhs)))
             if isinstance(tree.rhs, BinOp):
-                if tree.rhs.op == '&':
-                    return BinOp(BinOp(genCNF(tree.lhs), '|', genCNF(tree.rhs.lhs)), '&', BinOp(genCNF(tree.lhs), '|', genCNF(tree.rhs.rhs)))
-            return BinOp(genCNF(tree.lhs), '|', genCNF(tree.rhs))
-        return BinOp(genCNF(tree.lhs), '&', genCNF(tree.rhs))
+                if tree.rhs.op == '∧':
+                    return BinOp(BinOp(genCNF(tree.lhs), '∨', genCNF(tree.rhs.lhs)), '∧', BinOp(genCNF(tree.lhs), '∨', genCNF(tree.rhs.rhs)))
+            return BinOp(genCNF(tree.lhs), '∨', genCNF(tree.rhs))
+        return BinOp(genCNF(tree.lhs), '∧', genCNF(tree.rhs))
     if isinstance(tree, NegOP):
         return NegOP(genCNF(tree.stmt))
     return tree
+
+def makeAtomsSet(tree, set):
+
+    if isinstance(tree, BinOp):
+        set.update(makeAtomsSet(tree.lhs, set))
+        set.update(makeAtomsSet(tree.rhs, set))
+    elif isinstance(tree, NegOP):
+        set.add('¬' + tree.stmt)
+    else:
+        set.add(tree)
+
+    return set
 
 def simDis(tree, seen=[]):
 
@@ -444,14 +474,14 @@ def simDis(tree, seen=[]):
             return rhs, seen
         if rhs is None:
             return lhs, seen
-        return BinOp(lhs, '|', rhs), seen
+        return BinOp(lhs, '∨', rhs), seen
 
     if isinstance(tree, NegOP):
         if tree.stmt in seen:
             return None, 'delete clause'
-        tree = '~' + tree.stmt
+        tree = '¬' + tree.stmt
     else:
-        if '~' + tree in seen:
+        if '¬' + tree in seen:
             return None, 'delete clause'
     if tree in seen:
         return None, seen
@@ -462,17 +492,17 @@ def simDis(tree, seen=[]):
 def simCon(tree, repeats=[]):
 
     if isinstance(tree, BinOp):
-        if tree.op == '|':
+        if tree.op == '∨':
 
-            stmt, seen = simDis(tree)
+            stmt, seen = simDis(tree, [])
             if seen == 'delete clause':
-                return "Statement is always True"
-            stmtstr = gen_stmt(stmt)
-            if stmtstr in repeats:
                 return "Statement is always True", repeats
-            repeats.append(stmtstr)
+            stmtset = makeAtomsSet(stmt, set())
+            if stmtset in repeats:
+                return "Statement is always True", repeats
+            repeats.append(stmtset)
             return stmt, repeats
-        if tree.op == '&':
+        if tree.op == '∧':
 
             lhs, repeats = simCon(tree.lhs, repeats)
             rhs, repeats = simCon(tree.rhs, repeats)
@@ -480,21 +510,21 @@ def simCon(tree, repeats=[]):
                 return rhs, repeats
             if rhs == "Statement is always True":
                 return lhs, repeats
-            return BinOp(lhs, '&', rhs)
+            return BinOp(lhs, '∧', rhs), repeats
 
-    stmtstr = gen_stmt(tree)
-    if stmtstr in repeats:
+    stmtset = makeAtomsSet(tree, set())
+    if stmtset in repeats:
         return "Statement is always True", repeats
-    repeats.append(stmtstr)
+    repeats.append(stmtset)
     return tree, repeats
 
 def gen_stmt(tree):
-    pres = {'->':0, '<->':0, '&':1, '|':2}
+    pres = {'→':0, '↔':0, '∧':1, '∨':2}
     if isinstance(tree, NegOP):
         if isinstance(tree.stmt, BinOp):
-            return "~("+gen_stmt(tree.stmt)+") "
+            return "¬("+gen_stmt(tree.stmt)+") "
         else:
-            return "~"+gen_stmt(tree.stmt) + " "
+            return "¬"+gen_stmt(tree.stmt) + " "
     if isinstance(tree, BinOp):
         out = ""
         if type(tree.lhs) == str:
@@ -537,6 +567,7 @@ def home():
     s2 = ""
     s3 = ""
     s4 = ""
+    s5 = ""
     if form.validate_on_submit():
 
 
@@ -556,11 +587,13 @@ def home():
                 else:
 
                     cnf1 = cnf
+            simCNF = simCon(cnf, [])[0]
             if form.disCNF.data:
-                s1 = '1. Eliminate   <->    : ' + gen_stmt(noDI)
-                s2 = '2. Eliminate    ->    : ' + gen_stmt(noSI)
-                s3 = '3. Move  ~   inwards  : ' + gen_stmt(noB)
-                s4 = '4. Distribute | over & : ' + gen_stmt(simCon(cnf, [])[0])
+                s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
+                s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
+                s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
+                s4 = '4. Distribute ∨ over ∧ : ' + gen_stmt(cnf)
+                s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
             curAST = ast(astTree)
             output = curAST.printTruthTable()
             pdTable = pd.DataFrame(output)
@@ -581,7 +614,7 @@ def home():
             table = None
     else:
         table = None
-    return render_template('home.html', form=form, table=table, error=error, desc=desc, s1=s1, s2=s2, s3=s3, s4=s4)
+    return render_template('home.html', form=form, table=table, error=error, desc=desc, s1=s1, s2=s2, s3=s3, s4=s4, s5=s5)
 
 if __name__ == '__main__':
 	app.run(debug=True)
