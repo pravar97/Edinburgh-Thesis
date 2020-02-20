@@ -1,3 +1,5 @@
+import random
+
 from flask import Flask, render_template
 import itertools
 from flask_wtf import FlaskForm
@@ -522,9 +524,9 @@ def gen_stmt(tree):
     pres = {'→':0, '↔':0, '∧':1, '∨':2}
     if isinstance(tree, NegOP):
         if isinstance(tree.stmt, BinOp):
-            return "¬("+gen_stmt(tree.stmt)+") "
+            return "¬("+gen_stmt(tree.stmt)+")"
         else:
-            return "¬"+gen_stmt(tree.stmt) + " "
+            return "¬"+gen_stmt(tree.stmt)
     if isinstance(tree, BinOp):
         out = ""
         if type(tree.lhs) == str:
@@ -532,34 +534,45 @@ def gen_stmt(tree):
         elif isinstance(tree.lhs, NegOP):
             out += gen_stmt(tree.lhs) + " "
         elif pres[tree.lhs.op] > pres[tree.op]:
-            out += "(" + gen_stmt(tree.lhs) + ") "
+            out += "(" + gen_stmt(tree.lhs) + ")"
         else:
-            out += gen_stmt(tree.lhs) + " "
-        out += tree.op + " "
+            out += gen_stmt(tree.lhs)
+        out += " " + tree.op + " "
         if type(tree.rhs) == str:
-            out += tree.rhs + " "
+            out += tree.rhs
         elif isinstance(tree.rhs, NegOP):
-            out += gen_stmt(tree.rhs) + " "
+            out += gen_stmt(tree.rhs)
         elif pres[tree.rhs.op] > pres[tree.op]:
-            out += "(" + gen_stmt(tree.rhs) + ") "
+            out += "(" + gen_stmt(tree.rhs) + ")"
         else:
-            out += gen_stmt(tree.rhs) + " "
+            out += gen_stmt(tree.rhs)
         return out
     else:
-        return tree + " "
+        return tree
+
+def genRanTree(s):
+    ran = random.randint(0, 100)
+    if s < ran - 10:
+        return BinOp(genRanTree(s+20), ['→','↔','∧','∨'][random.randint(0, 3)], genRanTree(s+20))
+    elif s < ran:
+        return NegOP(genRanTree(s+20))
+    else:
+        return 'xyzabcdefghk'[random.randint(0, 11)]
 
 
 class Statement(FlaskForm):
     input = StringField(' ', validators=[DataRequired()])
-    submit = SubmitField('Enter')
-    disTT = BooleanField('Display Truth Table')
-    disCNF = BooleanField('Display conversion to CNF')
+    submit = SubmitField('Display Truth Table')
+    genRan = SubmitField('Generate Random Statement')
+    conCNF = SubmitField('Convert to CNF')
+
 
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
 
     form = Statement()
+
 
     error = ""
     desc = ""
@@ -570,25 +583,28 @@ def home():
     s5 = ""
     if form.validate_on_submit():
 
-
+        if form.genRan.data:
+            astTree = genRanTree(30)
+            form.input.data = gen_stmt(astTree)
         try:
             tokens = tokenize(form.input.data)
             parser = Parser(tokens)
             astTree = parser.parse()
-            noDI = rmN(rmDI(astTree))
-            noSI = rmN(rmSI(noDI))
-            noB = rmN(rmB(noSI))
 
-            cnf1 = noB
-            while True:
-                cnf = genCNF(cnf1)
-                if gen_stmt(cnf) == gen_stmt(cnf1):
-                    break
-                else:
+            if form.conCNF.data:
+                noDI = rmN(rmDI(astTree))
+                noSI = rmN(rmSI(noDI))
+                noB = rmN(rmB(noSI))
 
-                    cnf1 = cnf
-            simCNF = simCon(cnf, [])[0]
-            if form.disCNF.data:
+                cnf1 = noB
+                while True:
+                    cnf = genCNF(cnf1)
+                    if gen_stmt(cnf) == gen_stmt(cnf1):
+                        break
+                    else:
+
+                        cnf1 = cnf
+                simCNF = simCon(cnf, [])[0]
                 s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
                 s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
                 s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
@@ -596,7 +612,7 @@ def home():
                 s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
             curAST = ast(astTree)
             output = curAST.printTruthTable()
-            pdTable = pd.DataFrame(output)
+
             if True in output['Result']:
                 if False in output['Result']:
                     desc = "Statement is satisfiable"
@@ -604,7 +620,8 @@ def home():
                     desc = "Statement is a tautology"
             else:
                 desc = "Statement is unsatisfiable"
-            if form.disTT.data:
+            if form.submit.data:
+                pdTable = pd.DataFrame(output)
                 table = pdTable.head(len(output['Result'])).to_html(col_space=50, classes='Table')
             else:
                 table = None

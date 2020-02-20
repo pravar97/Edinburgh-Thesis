@@ -57,7 +57,9 @@
 </div>
 {% endif %}
 
-
+<div class="alert alert-info" role="alert">
+  {{desc}}
+</div>
 <div class=page>
 
     {% if table != None %}
@@ -66,9 +68,7 @@
 
 </div>
 {% if desc %}
-<div class="alert alert-info" role="alert">
-  {{desc}}
-</div>
+
 {% endif %}
 {% if s1 %}
 <div class="alert alert-warning" role="alert">
