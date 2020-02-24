@@ -500,8 +500,9 @@ def simCon(tree, repeats=[]):
             if seen == 'delete clause':
                 return "Statement is always True", repeats
             stmtset = makeAtomsSet(stmt, set())
-            if stmtset in repeats:
-                return "Statement is always True", repeats
+            for r in repeats:
+                if r.issubset(stmtset):
+                    return "Statement is always True", repeats
             repeats.append(stmtset)
             return stmt, repeats
         if tree.op == '∧':
@@ -515,10 +516,30 @@ def simCon(tree, repeats=[]):
             return BinOp(lhs, '∧', rhs), repeats
 
     stmtset = makeAtomsSet(tree, set())
-    if stmtset in repeats:
-        return "Statement is always True", repeats
+    for r in repeats:
+        if r.issubset(stmtset):
+            return "Statement is always True", repeats
     repeats.append(stmtset)
     return tree, repeats
+
+def delReps(tree, repeats):
+
+    if isinstance(tree, BinOp):
+        if tree.op == '∧':
+
+            lhs = delReps(tree.lhs, repeats)
+            rhs = delReps(tree.rhs, repeats)
+            if lhs == "Delete":
+                return rhs
+            if rhs == "Delete":
+                return lhs
+            return BinOp(lhs, '∧', rhs)
+
+    for r in repeats:
+        stmtset = makeAtomsSet(tree, set())
+        if r.issubset(stmtset) and r != stmtset:
+            return "Delete"
+    return tree
 
 def gen_stmt(tree):
     pres = {'→':0, '↔':0, '∧':1, '∨':2}
@@ -553,7 +574,7 @@ def gen_stmt(tree):
 def genRanTree(s):
     ran = random.randint(0, 100)
     if s < ran - 10:
-        return BinOp(genRanTree(s+20), ['→','↔','∧','∨'][random.randint(0, 3)], genRanTree(s+20))
+        return BinOp(genRanTree(s+40), ['→','↔','∧','∨'][random.randint(0, 3)], genRanTree(s+40))
     elif s < ran:
         return NegOP(genRanTree(s+20))
     else:
@@ -584,7 +605,7 @@ def home():
     if form.validate_on_submit():
 
         if form.genRan.data:
-            astTree = genRanTree(30)
+            astTree = genRanTree(0)
             form.input.data = gen_stmt(astTree)
         try:
             tokens = tokenize(form.input.data)
@@ -604,7 +625,9 @@ def home():
                     else:
 
                         cnf1 = cnf
-                simCNF = simCon(cnf, [])[0]
+                simCNFp = simCon(cnf, [])
+
+                simCNF = delReps(simCNFp[0], simCNFp[1])
                 s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
                 s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
                 s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)

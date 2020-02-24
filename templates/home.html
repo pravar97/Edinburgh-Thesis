@@ -56,10 +56,10 @@
   {{error}}
 </div>
 {% endif %}
-
+{% if desc %}
 <div class="alert alert-info" role="alert">
   {{desc}}
-</div>
+</div>{% endif %}
 <div class=page>
 
     {% if table != None %}
@@ -67,9 +67,9 @@
     {% endif %}
 
 </div>
-{% if desc %}
 
-{% endif %}
+
+
 {% if s1 %}
 <div class="alert alert-warning" role="alert">
   {{s1}}<br>{{s2}}<br>{{s3}}<br>{{s4}}<br>{{s5}}<br>
