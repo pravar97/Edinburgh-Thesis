@@ -1,8 +1,9 @@
 import random
 
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 import itertools
 from flask_wtf import FlaskForm
+
 from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import DataRequired
 from flask_bootstrap import Bootstrap
@@ -12,6 +13,10 @@ import pandas as pd
 app = Flask(__name__)
 Bootstrap(app)
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+
+global globCNF
+global form
+
 
 class BinOp:
     def __init__(self, lhs, op, rhs):
@@ -369,7 +374,6 @@ class ast:
 
         output['Result'] = []
 
-
         possAssigns = list(itertools.product([0, 1], repeat=len(terminals)))
         for i in possAssigns:
             j = 0
@@ -383,6 +387,8 @@ class ast:
             output['Result'].append(int(self.isTrue(tree)))
 
         return output
+
+
 def rmDI(tree):
     if isinstance(tree, NegOP):
 
@@ -396,6 +402,7 @@ def rmDI(tree):
         return BinOp(rmDI(tree.lhs), tree.op, rmDI(tree.rhs))
     return tree
 
+
 def rmSI(tree):
     if isinstance(tree, NegOP):
         return NegOP(rmSI(tree.stmt))
@@ -406,6 +413,7 @@ def rmSI(tree):
             return BinOp(NegOP(a), '∨', b)
         return BinOp(rmSI(tree.lhs), tree.op, rmSI(tree.rhs))
     return tree
+
 
 def rmB(tree):
 
@@ -422,6 +430,7 @@ def rmB(tree):
         return BinOp(rmB(tree.lhs), tree.op, rmB(tree.rhs))
     return tree
 
+
 def rmN(tree):
 
     if isinstance(tree, NegOP):
@@ -432,6 +441,7 @@ def rmN(tree):
     if isinstance(tree, BinOp):
         return BinOp(rmN(tree.lhs), tree.op, rmN(tree.rhs))
     return tree
+
 
 def genCNF(tree):
 
@@ -449,6 +459,7 @@ def genCNF(tree):
         return NegOP(genCNF(tree.stmt))
     return tree
 
+
 def makeAtomsSet(tree, set):
 
     if isinstance(tree, BinOp):
@@ -460,6 +471,7 @@ def makeAtomsSet(tree, set):
         set.add(tree)
 
     return set
+
 
 def simDis(tree, seen=[]):
 
@@ -490,6 +502,7 @@ def simDis(tree, seen=[]):
 
     seen.append(tree)
     return tree, seen
+
 
 def simCon(tree, repeats=[]):
 
@@ -522,6 +535,7 @@ def simCon(tree, repeats=[]):
     repeats.append(stmtset)
     return tree, repeats
 
+
 def delReps(tree, repeats):
 
     if isinstance(tree, BinOp):
@@ -540,6 +554,7 @@ def delReps(tree, repeats):
         if r.issubset(stmtset) and r != stmtset:
             return "Delete"
     return tree
+
 
 def gen_stmt(tree):
     pres = {'→':0, '↔':0, '∧':1, '∨':2}
@@ -571,6 +586,7 @@ def gen_stmt(tree):
     else:
         return tree
 
+
 def genRanTree(s):
     ran = random.randint(0, 100)
     if s < ran - 10:
@@ -582,19 +598,54 @@ def genRanTree(s):
 
 
 class Statement(FlaskForm):
-    input = StringField(' ', validators=[DataRequired()])
+    input = StringField(' ')
     submit = SubmitField('Display Truth Table')
     genRan = SubmitField('Generate Random Statement')
     conCNF = SubmitField('Convert to CNF')
+    ques = SubmitField('Answer Questions')
 
+
+class Questions(FlaskForm):
+    input = StringField(' ')
+    submit = SubmitField('Enter')
+    goHome = SubmitField('Return to Homepage')
+
+
+def isDis(tree):
+    if isinstance(tree, BinOp):
+        if tree.op == '∨':
+            return isDis(tree.lhs) and isDis(tree.rhs)
+        else:
+            return False
+    if isinstance(tree, NegOP):
+        return type(tree.stmt) == str
+
+    return type(tree) == str
+
+
+def isCNF(tree):
+    if isinstance(tree, BinOp):
+        if tree.op == '∧':
+            return isCNF(tree.lhs) and isCNF(tree.rhs)
+        else:
+            return isDis(tree)
+    if isinstance(tree, NegOP):
+        return type(tree.stmt) == str
+
+    return type(tree) == str
+
+
+def isEQ(aTree, bTree):
+    a = ast(aTree)
+    b = ast(bTree)
+    b.terminals = a.terminals
+    return a.printTruthTable() == b.printTruthTable()
 
 
 @app.route('/', methods=['POST', 'GET'])
 def home():
-
-    form = Statement()
-
-
+    global globCNF
+    global form
     error = ""
     desc = ""
     s1 = ""
@@ -602,59 +653,115 @@ def home():
     s3 = ""
     s4 = ""
     s5 = ""
+    table = None
+    try:
+        if isinstance(form, Statement):
+            form = Statement()
+            template = 'home.html'
+        else:
+            template = 'questions.html'
+    except NameError:
+        form = Statement()
+        template = 'home.html'
+
+
     if form.validate_on_submit():
+        if isinstance(form, Questions):
+            form = Questions()
+            if form.goHome.data:
 
-        if form.genRan.data:
-            astTree = genRanTree(0)
-            form.input.data = gen_stmt(astTree)
-        try:
-            tokens = tokenize(form.input.data)
-            parser = Parser(tokens)
-            astTree = parser.parse()
-
-            if form.conCNF.data:
-                noDI = rmN(rmDI(astTree))
-                noSI = rmN(rmSI(noDI))
-                noB = rmN(rmB(noSI))
-
-                cnf1 = noB
-                while True:
-                    cnf = genCNF(cnf1)
-                    if gen_stmt(cnf) == gen_stmt(cnf1):
-                        break
-                    else:
-
-                        cnf1 = cnf
-                simCNFp = simCon(cnf, [])
-
-                simCNF = delReps(simCNFp[0], simCNFp[1])
-                s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
-                s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
-                s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
-                s4 = '4. Distribute ∨ over ∧ : ' + gen_stmt(cnf)
-                s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
-            curAST = ast(astTree)
-            output = curAST.printTruthTable()
-
-            if True in output['Result']:
-                if False in output['Result']:
-                    desc = "Statement is satisfiable"
-                else:
-                    desc = "Statement is a tautology"
-            else:
-                desc = "Statement is unsatisfiable"
+                form = Statement()
+                return render_template('home.html', form=form)
             if form.submit.data:
-                pdTable = pd.DataFrame(output)
-                table = pdTable.head(len(output['Result'])).to_html(col_space=50, classes='Table')
-            else:
-                table = None
-        except Exception as inst:
-            error = str(inst)
+                desc = gen_stmt(globCNF)
+                form = Questions()
+                tokens = tokenize(form.input.data)
+                if len(tokens) == 0:
+                    raise Exception("Input Field is empty")
+                parser = Parser(tokens)
+                astTree = parser.parse()
+                if isCNF(astTree):
+                    if isEQ(astTree, globCNF):
+                        wrong = ''
+                        right = 'Well done, your CNF is correct :)'
+                    else:
+                        wrong = 'Statement is in CNF but it is no longer equivalent'
+                        right = ''
+                else:
+                    right = ''
+                    if isEQ(astTree, globCNF):
+                        wrong = 'Statement is equivalent but it is not in CNF'
+                    else:
+                        wrong = 'Statement is not equivalent and is not in CNF'
 
-            table = None
-    else:
-        table = None
-    return render_template('home.html', form=form, table=table, error=error, desc=desc, s1=s1, s2=s2, s3=s3, s4=s4, s5=s5)
+                return render_template('questions.html', form=form, desc=desc, wrong=wrong, right=right)
+        else:
+
+            if form.genRan.data:
+                astTree = genRanTree(0)
+                form.input.data = gen_stmt(astTree)
+
+            try:
+                if form.ques.data:
+                    form = Questions()
+                    globCNF = genRanTree(0)
+                    desc = gen_stmt(globCNF)
+
+                    return render_template('questions.html', form=form, desc=desc)
+
+                tokens = tokenize(form.input.data)
+                if len(tokens) == 0:
+                    raise Exception("Input Field is empty")
+                parser = Parser(tokens)
+                astTree = parser.parse()
+
+                if form.conCNF.data:
+                    noDI = rmN(rmDI(astTree))
+                    noSI = rmN(rmSI(noDI))
+                    noB = rmN(rmB(noSI))
+
+                    cnf1 = noB
+                    while True:
+                        cnf = genCNF(cnf1)
+                        if gen_stmt(cnf) == gen_stmt(cnf1):
+                            break
+                        else:
+
+                            cnf1 = cnf
+                    simCNFp = simCon(cnf, [])
+
+                    simCNF = delReps(simCNFp[0], simCNFp[1])
+                    s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
+                    s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
+                    s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
+                    s4 = '4. Distribute ∨ over ∧ : ' + gen_stmt(cnf)
+                    s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
+                curAST = ast(astTree)
+                output = curAST.printTruthTable()
+
+                if True in output['Result']:
+                    if False in output['Result']:
+                        desc = "Statement is satisfiable"
+                    else:
+                        desc = "Statement is a tautology"
+                else:
+                    desc = "Statement is unsatisfiable"
+                if form.submit.data:
+                    pdTable = pd.DataFrame(output)
+                    table = pdTable.head(len(output['Result'])).to_html(col_space=50, classes='Table')
+                else:
+                    table = None
+            except Exception as inst:
+                error = str(inst)
+
+                table = None
+
+    return render_template(template, form=form, table=table, error=error, desc=desc, s1=s1, s2=s2, s3=s3, s4=s4, s5=s5)
+
+
+
+
 
 if __name__ == '__main__':
-	app.run(debug=True)
+
+    app.run(debug=True)
