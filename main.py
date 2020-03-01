@@ -608,9 +608,8 @@ class Statement(FlaskForm):
 class Questions(FlaskForm):
     input = StringField(' ')
     submit = SubmitField('Enter')
-    goHome = SubmitField('Return to Homepage')
     next = SubmitField('Next Question')
-
+    goHome = SubmitField('Return to Homepage')
 
 def isDis(tree):
     if isinstance(tree, BinOp):
