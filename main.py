@@ -569,7 +569,7 @@ def gen_stmt(tree):
             out += tree.lhs + " "
         elif isinstance(tree.lhs, NegOP):
             out += gen_stmt(tree.lhs) + " "
-        elif pres[tree.lhs.op] > pres[tree.op]:
+        elif pres[tree.lhs.op] >= pres[tree.op]:
             out += "(" + gen_stmt(tree.lhs) + ")"
         else:
             out += gen_stmt(tree.lhs)
@@ -578,7 +578,7 @@ def gen_stmt(tree):
             out += tree.rhs
         elif isinstance(tree.rhs, NegOP):
             out += gen_stmt(tree.rhs)
-        elif pres[tree.rhs.op] > pres[tree.op]:
+        elif pres[tree.rhs.op] >= pres[tree.op]:
             out += "(" + gen_stmt(tree.rhs) + ")"
         else:
             out += gen_stmt(tree.rhs)
@@ -641,9 +641,13 @@ def isEQ(tree):
     for c in request.args.get('terminals'):
         bterminals[c] = False
     if set(a.terminals) != set(bterminals):
+
         return False
 
+
     a.terminals = bterminals
+
+
     return hashlib.md5(str(a.printTruthTable()['Result']).encode()).hexdigest() == request.args.get('results')
 
 
@@ -670,13 +674,17 @@ def home():
                 form.input.data = gen_stmt(astTree)
 
             if form.ques.data:
+                endloop = False
+                while(not endloop):
+                    curCNF = genRanTree(0)
+                    desc = gen_stmt(curCNF)
+                    curAST = ast(curCNF)
 
-                curCNF = genRanTree(0)
-                desc = gen_stmt(curCNF)
-                curAST = ast(curCNF)
+                    terminals = "".join(list(curAST.terminals.keys()))
+                    u_results = curAST.printTruthTable()['Result']
+                    endloop = 1 in u_results and 0 in u_results
 
-                terminals = "".join(list(curAST.terminals.keys()))
-                results = hashlib.md5(str(curAST.printTruthTable()['Result']).encode()).hexdigest()
+                results = hashlib.md5(str(u_results).encode()).hexdigest()
                 return redirect('/q?statement='+desc+'&terminals='+terminals+'&results='+results)
 
             tokens = tokenize(form.input.data)
@@ -718,6 +726,7 @@ def home():
                 desc = "Statement is unsatisfiable"
             if form.submit.data:
                 pdTable = pd.DataFrame(output)
+
                 table = pdTable.head(len(output['Result'])).to_html(col_space=50, classes='Table')
             else:
                 table = None
@@ -767,12 +776,16 @@ def questions():
 
                 return render_template('questions.html', form=form, desc=desc, wrong=wrong, right=right)
             if form.next.data:
-                curCNF = genRanTree(0)
-                desc = gen_stmt(curCNF)
-                curAST = ast(curCNF)
+                while (not endloop):
+                    curCNF = genRanTree(0)
+                    desc = gen_stmt(curCNF)
+                    curAST = ast(curCNF)
 
-                terminals = "".join(list(curAST.terminals.keys()))
-                results = hashlib.md5(str(curAST.printTruthTable()['Result']).encode()).hexdigest()
+                    terminals = "".join(list(curAST.terminals.keys()))
+                    u_results = curAST.printTruthTable()['Result']
+                    endloop = 1 in u_results and 0 in u_results
+
+                results = hashlib.md5(str(u_results).encode()).hexdigest()
                 return redirect('/q?statement=' + desc + '&terminals=' + terminals + '&results=' + results)
         except Exception as inst:
             error = str(inst)
