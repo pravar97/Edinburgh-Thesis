@@ -591,7 +591,7 @@ def genRanTree(s):
     ran = random.randint(0, 100)
     if s < ran - 10:
         return BinOp(genRanTree(s+40), ['→','↔','∧','∨'][random.randint(0, 3)], genRanTree(s+40))
-    elif s < ran:
+    elif s <= ran:
         return NegOP(genRanTree(s+20))
     else:
         return 'xyzabcdefghk'[random.randint(0, 11)]
