@@ -776,6 +776,7 @@ def questions():
 
                 return render_template('questions.html', form=form, desc=desc, wrong=wrong, right=right)
             if form.next.data:
+                endloop = False
                 while (not endloop):
                     curCNF = genRanTree(0)
                     desc = gen_stmt(curCNF)
