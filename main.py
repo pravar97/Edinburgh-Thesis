@@ -569,7 +569,7 @@ def gen_stmt(tree):
             out += tree.lhs + " "
         elif isinstance(tree.lhs, NegOP):
             out += gen_stmt(tree.lhs) + " "
-        elif pres[tree.lhs.op] >= pres[tree.op]:
+        elif pres[tree.lhs.op] > pres[tree.op] or pres[tree.lhs.op] == 2 and pres[tree.op] == 2:
             out += "(" + gen_stmt(tree.lhs) + ")"
         else:
             out += gen_stmt(tree.lhs)
@@ -578,7 +578,7 @@ def gen_stmt(tree):
             out += tree.rhs
         elif isinstance(tree.rhs, NegOP):
             out += gen_stmt(tree.rhs)
-        elif pres[tree.rhs.op] >= pres[tree.op]:
+        elif pres[tree.rhs.op] > pres[tree.op] or pres[tree.rhs.op] == 2 and pres[tree.op] == 2:
             out += "(" + gen_stmt(tree.rhs) + ")"
         else:
             out += gen_stmt(tree.rhs)
@@ -590,7 +590,7 @@ def gen_stmt(tree):
 def genRanTree(s):
     ran = random.randint(0, 100)
     if s < ran - 10:
-        return BinOp(genRanTree(s+40), ['→','↔','∧','∨'][random.randint(0, 3)], genRanTree(s+40))
+        return BinOp(genRanTree(s+40), ['→','→','↔','∧','∨','∧','∨','∧','∨','∧','∨'][random.randint(0, 10)], genRanTree(s+40))
     elif s <= ran:
         return NegOP(genRanTree(s+20))
     else:
@@ -609,7 +609,19 @@ class Questions(FlaskForm):
     input = StringField(' ')
     submit = SubmitField('Enter')
     next = SubmitField('Next Question')
+    change = SubmitField('Change Difficulty')
     goHome = SubmitField('Return to Homepage')
+
+class questionsDifficultyForm(FlaskForm):
+
+
+    e1 = SubmitField('Very Easy')
+    e2 = SubmitField('Easy')
+    submit = SubmitField('Medium')
+    h1 = SubmitField('Hard')
+    h2 = SubmitField('Very Hard')
+    goHome = SubmitField('Return to Homepage')
+
 
 def isDis(tree):
     if isinstance(tree, BinOp):
@@ -674,18 +686,8 @@ def home():
                 form.input.data = gen_stmt(astTree)
 
             if form.ques.data:
-                endloop = False
-                while(not endloop):
-                    curCNF = genRanTree(0)
-                    desc = gen_stmt(curCNF)
-                    curAST = ast(curCNF)
 
-                    terminals = "".join(list(curAST.terminals.keys()))
-                    u_results = curAST.printTruthTable()['Result']
-                    endloop = 1 in u_results and 0 in u_results
-
-                results = hashlib.md5(str(u_results).encode()).hexdigest()
-                return redirect('/q?statement='+desc+'&terminals='+terminals+'&results='+results)
+                return redirect('/choose_question_difficulty')
 
             tokens = tokenize(form.input.data)
             if len(tokens) == 0:
@@ -738,6 +740,38 @@ def home():
     return render_template('home.html', form=form, table=table, error=error, desc=desc, s1=s1, s2=s2, s3=s3, s4=s4, s5=s5)
 
 
+@app.route('/choose_question_difficulty', methods=['POST', 'GET'])
+def questionsDifficulty():
+
+    form = questionsDifficultyForm()
+    if form.validate_on_submit():
+        if form.goHome.data:
+
+            return redirect("/", code=302)
+        difficulty = 50
+        if form.e1.data:
+            difficulty = 0
+        elif form.e2.data:
+            difficulty = 25
+        elif form.h1.data:
+            difficulty = 75
+        elif form.h2.data:
+            difficulty = 100
+        endloop = False
+        while (not endloop):
+            curCNF = genRanTree(50 - difficulty)
+            desc = gen_stmt(curCNF)
+            curAST = ast(curCNF)
+
+            terminals = "".join(list(curAST.terminals.keys()))
+            u_results = curAST.printTruthTable()['Result']
+            endloop = 1 in u_results and 0 in u_results
+
+        results = hashlib.md5(str(u_results).encode()).hexdigest()
+        return redirect('/q?difficulty=' + str(difficulty) + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
+    return render_template('questionsDifficulty.html', form=form)
+
+
 @app.route('/q', methods=['POST', 'GET'])
 def questions():
 
@@ -747,14 +781,15 @@ def questions():
     form = Questions()
     if form.validate_on_submit():
         try:
-            form = Questions()
+
             if form.goHome.data:
-                form = Statement()
 
                 return redirect("/", code=302)
+            if form.change.data:
+
+                return redirect('/choose_question_difficulty')
             if form.submit.data:
 
-                form = Questions()
                 tokens = tokenize(form.input.data)
                 if len(tokens) == 0:
                     raise Exception("Input Field is empty")
@@ -778,7 +813,8 @@ def questions():
             if form.next.data:
                 endloop = False
                 while (not endloop):
-                    curCNF = genRanTree(0)
+                    diffculty = request.args.get('difficulty')
+                    curCNF = genRanTree(50-int(diffculty))
                     desc = gen_stmt(curCNF)
                     curAST = ast(curCNF)
 
@@ -787,7 +823,7 @@ def questions():
                     endloop = 1 in u_results and 0 in u_results
 
                 results = hashlib.md5(str(u_results).encode()).hexdigest()
-                return redirect('/q?statement=' + desc + '&terminals=' + terminals + '&results=' + results)
+                return redirect('/q?difficulty='+diffculty + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
         except Exception as inst:
             error = str(inst)
 
