@@ -609,6 +609,7 @@ class Questions(FlaskForm):
     input = StringField(' ')
     submit = SubmitField('Enter')
     next = SubmitField('Next Question')
+    see = SubmitField('See sample solution')
     change = SubmitField('Change Difficulty')
     goHome = SubmitField('Return to Homepage')
 
@@ -652,7 +653,7 @@ def isEQ(tree):
     bterminals = {}
     for c in request.args.get('terminals'):
         bterminals[c] = False
-    if set(a.terminals) != set(bterminals):
+    if not set(a.terminals).issubset(set(bterminals)):
 
         return False
 
@@ -777,6 +778,11 @@ def questions():
 
     error = ""
     desc = request.args.get('statement')
+    s1 = ""
+    s2 = ""
+    s3 = ""
+    s4 = ""
+    s5 = ""
 
     form = Questions()
     if form.validate_on_submit():
@@ -788,6 +794,29 @@ def questions():
             if form.change.data:
 
                 return redirect('/choose_question_difficulty')
+            if form.see.data:
+                parser = Parser(tokenize(desc))
+                astTree = parser.parse()
+                noDI = rmN(rmDI(astTree))
+                noSI = rmN(rmSI(noDI))
+                noB = rmN(rmB(noSI))
+
+                cnf1 = noB
+                while True:
+                    cnf = genCNF(cnf1)
+                    if gen_stmt(cnf) == gen_stmt(cnf1):
+                        break
+                    else:
+
+                        cnf1 = cnf
+                simCNFp = simCon(cnf, [])
+
+                simCNF = delReps(simCNFp[0], simCNFp[1])
+                s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
+                s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
+                s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
+                s4 = '4. Distribute ∨ over ∧ : ' + gen_stmt(cnf)
+                s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
             if form.submit.data:
 
                 tokens = tokenize(form.input.data)
@@ -827,7 +856,7 @@ def questions():
         except Exception as inst:
             error = str(inst)
 
-    return render_template('questions.html', form=form, desc=desc, error=error)
+    return render_template('questions.html', form=form, desc=desc, error=error, s1=s1, s2=s2, s3=s3, s4=s4, s5=s5)
 
 
 if __name__ == '__main__':
