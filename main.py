@@ -766,7 +766,7 @@ def questionsDifficulty():
 
             terminals = "".join(list(curAST.terminals.keys()))
             u_results = curAST.printTruthTable()['Result']
-            endloop = 1 in u_results and 0 in u_results
+            endloop = 1 in u_results and 0 in u_results and not isCNF(curCNF)
 
         results = hashlib.md5(str(u_results).encode()).hexdigest()
         return redirect('/q?difficulty=' + str(difficulty) + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
@@ -849,7 +849,7 @@ def questions():
 
                     terminals = "".join(list(curAST.terminals.keys()))
                     u_results = curAST.printTruthTable()['Result']
-                    endloop = 1 in u_results and 0 in u_results
+                    endloop = 1 in u_results and 0 in u_results and not isCNF(curCNF)
 
                 results = hashlib.md5(str(u_results).encode()).hexdigest()
                 return redirect('/q?difficulty='+diffculty + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
