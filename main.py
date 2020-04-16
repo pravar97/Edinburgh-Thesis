@@ -14,7 +14,7 @@ import pandas as pd
 
 app = Flask(__name__)
 Bootstrap(app)
-app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+app.config['SECRET_KEY'] = 'bdd9761c62d68ea530872f8848107c21'
 
 
 class BinOp:
