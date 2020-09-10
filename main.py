@@ -611,43 +611,18 @@ def gen_stmt(tree):
 
 
 def genRanTree(s):
-    ran = random.randint(0, 100)
-    if s < ran - 10:  # Select binary if this is randomly satisified
-        return BinOp(genRanTree(s + 40), ['→', '→', '↔', '∧', '∨', '∧', '∨', '∧', '∨', '∧', '∨'][random.randint(0, 10)],  # Randomly select an operator
-                     genRanTree(s + 40))
-    elif s <= ran:  # Select negation if this is randomly satisified
-        return NegOP(genRanTree(s + 20))
-    else:  # Base case: return a single atom
+    if s > 128:  # Base case: return a single atom
         return 'xyzabcdefghk'[random.randint(0, 11)]  # Randomly select an atom
 
-
-class Statement(FlaskForm):
-    #  Set up buttons and text boxes
-    input = StringField(' ')
-    submit = SubmitField('Display Truth Table')
-    genRan = SubmitField('Generate Random Statement')
-    conCNF = SubmitField('Convert to CNF')
-    ques = SubmitField('Answer Questions')
-
-
-class Questions(FlaskForm):
-    #  Set up buttons and text boxes
-    input = StringField(' ')
-    submit = SubmitField('Enter')
-    next = SubmitField('Next Question')
-    see = SubmitField('See sample solution')
-    change = SubmitField('Change Difficulty')
-    goHome = SubmitField('Return to Homepage')
-
-
-class questionsDifficultyForm(FlaskForm):
-    #  Set up buttons and text boxes
-    e1 = SubmitField('Very Easy')
-    e2 = SubmitField('Easy')
-    submit = SubmitField('Medium')
-    h1 = SubmitField('Hard')
-    h2 = SubmitField('Very Hard')
-    goHome = SubmitField('Return to Homepage')
+    ran = random.randint(s, 128)
+    if ran < 64:  # Select binary if this is randomly satisfied
+        return BinOp(genRanTree(int(80 + 0.5 * s)), '↔', genRanTree(int(80 + 0.5 * s)))
+    elif ran < 96:  # Select binary if this is randomly satisfied
+        return BinOp(genRanTree(int(80 + 0.5 * s)), '→', genRanTree(int(80 + 0.5 * s)))
+    elif random.randint(0, 1):
+        return BinOp(genRanTree(int(80 + 0.5 * s)), ['∨', '∧'][random.randint(0, 1)], genRanTree(int(80 + 0.5 * s)))
+    else:  # Select negation if this is randomly satisfied
+        return NegOP(genRanTree(int(80 + 0.5 * s)))
 
 
 def isDis(tree):
@@ -687,18 +662,86 @@ def isEQ(tree):
     return hashlib.md5(str(a.printTruthTable()['Result']).encode()).hexdigest() == request.args.get('results')  # Compare the hashes
 
 
+def convertToCNF(astTree):
+    noDI = rmN(rmDI(astTree))  # Create a tree with no double implications
+    noSI = rmN(rmSI(noDI))  # Create a tree with no single implications
+    noB = rmN(rmB(noSI))  # Create a tree with negations moved in
+
+    cnf1 = noB
+    while True:  # Keep looping to make sure the statement is really in CNF
+        cnf = genCNF(cnf1)  # Create a tree that is in CNF
+        if gen_stmt(cnf) == gen_stmt(cnf1):
+            break
+        else:
+
+            cnf1 = cnf
+    simCNFp = simCon(cnf, [])  # Simplyfy the CNF
+
+    simCNF = delReps(simCNFp[0], simCNFp[1])  # Delete disjunctions that are subsets of others since some
+    # can be missed out in simCon
+
+    # Create Steps for students to understand
+    s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
+    s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
+    s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
+    s4 = '4. Distribute ∨ over ∧ : ' + gen_stmt(cnf)
+    s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
+    return s1, s2, s3, s4, s5
+
+
+def genQuestion(difficulty):
+
+    while True:  # Keep making statements until appropriate
+        curCNF = genRanTree(difficulty)  # Generate random statement with difficulty parameter
+        desc = gen_stmt(curCNF)  # convert tree to text form
+        curAST = ast(curCNF)
+
+        terminals = "".join(list(curAST.terminals.keys()))  # Get a list of terminals in a single string
+        u_results = curAST.printTruthTable()['Result']  # Get the results column from the statement's truth table
+        if 1 in u_results and 0 in u_results and not isCNF(curCNF):  # Only be okay this data if its satisifiable, not a tautolgy and is not already in CNF
+            break
+
+    results = hashlib.md5(str(u_results).encode()).hexdigest()  # Hash the results column
+    # Redirect to Questions page with relevent question data as URL parameters
+    return redirect('/q?difficulty=' + str(
+        difficulty) + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
+
+
+class HomeForm(FlaskForm):
+    #  Set up buttons and text boxes
+    input = StringField(' ')
+    submit = SubmitField('Display Truth Table')
+    genRan = SubmitField('Generate Random Statement')
+    conCNF = SubmitField('Convert to CNF')
+    ques = SubmitField('Answer Questions')
+
+
+class QuestionsForm(FlaskForm):
+    #  Set up buttons and text boxes
+    input = StringField(' ')
+    submit = SubmitField('Enter')
+    next = SubmitField('Next Question')
+    see = SubmitField('See sample solution')
+    change = SubmitField('Change Difficulty')
+    goHome = SubmitField('Return to Homepage')
+
+
+class QuestionsDifficultyForm(FlaskForm):
+    #  Set up buttons and text boxes
+    e1 = SubmitField('Very Easy')
+    e2 = SubmitField('Easy')
+    submit = SubmitField('Medium')
+    h1 = SubmitField('Hard')
+    h2 = SubmitField('Very Hard')
+    goHome = SubmitField('Return to Homepage')
+
+
 @app.route('/', methods=['POST', 'GET'])
 def home():
-    form = Statement()  # Set up the form features for homepage
+    form = HomeForm()  # Set up the form features for homepage
 
     # Make every form output initially empty
-    error = ""
-    desc = ""
-    s1 = ""
-    s2 = ""
-    s3 = ""
-    s4 = ""
-    s5 = ""
+    error = desc = s1 = s2 = s3 = s4 = s5 = ""
     table = None
 
     # If a button has been clicked
@@ -709,7 +752,7 @@ def home():
                 astTree = genRanTree(0)  # Get a random tree
                 form.input.data = gen_stmt(astTree)  # Set the textbox to that random statement
 
-            if form.ques.data:  # If its Questions button redirect the user
+            if form.ques.data:  # If its Questions button, redirect the user
                 return redirect('/choose_question_difficulty')
 
             tokens = tokenize(form.input.data)  # Make a list of tokens based on textbox input
@@ -719,37 +762,15 @@ def home():
             astTree = parser.parse()  # Make a tree from the tokens list
 
             if form.conCNF.data:  # If the convert to CNF button is clicked
-                noDI = rmN(rmDI(astTree))  # Create a tree with no double implications
-                noSI = rmN(rmSI(noDI))   # Create a tree with no single implications
-                noB = rmN(rmB(noSI))  # Create a tree with negations moved in
-
-                cnf1 = noB
-                while True:  # Keep looping to make sure the statement is really in CNF
-                    cnf = genCNF(cnf1)  # Create a tree that is in CNF
-                    if gen_stmt(cnf) == gen_stmt(cnf1):
-                        break
-                    else:
-
-                        cnf1 = cnf
-                simCNFp = simCon(cnf, [])  # Simplyfy the CNF
-
-                simCNF = delReps(simCNFp[0], simCNFp[1])  # Delete disjunctions that are subsets of others since some
-                # can be missed out in simCon
-
-                # Create Steps for students to understand
-                s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
-                s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
-                s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
-                s4 = '4. Distribute ∨ over ∧ : ' + gen_stmt(cnf)
-                s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
+                s1, s2, s3, s4, s5 = convertToCNF(astTree)
 
             # Generate a truth table
             curAST = ast(astTree)
             output = curAST.printTruthTable()
 
             # Check whether statement is satisfiable, tautology or unsatisfiable
-            if True in output['Result']:
-                if False in output['Result']:
+            if 1 in output['Result']:
+                if 0 in output['Result']:
                     desc = "Statement is satisfiable"
                 else:
                     desc = "Statement is a tautology"
@@ -775,34 +796,20 @@ def home():
 
 @app.route('/choose_question_difficulty', methods=['POST', 'GET'])
 def questionsDifficulty():
-    form = questionsDifficultyForm()  # Set the form objects
+    form = QuestionsDifficultyForm()  # Set the form objects
     if form.validate_on_submit():  # If a button has been clicked
         if form.goHome.data:  # Go back to home page if this button clicked
             return redirect("/", code=302)
-        difficulty = 50  # Default difficulty (for Medium difficulty)
+        difficulty = 0  # Default difficulty (for Medium difficulty)
         if form.e1.data:  # If very easy clicked change difficulty to 0
-            difficulty = 0
+            difficulty = 64
         elif form.e2.data:  # If easy clicked change difficulty to 25
-            difficulty = 25
+            difficulty = 32
         elif form.h1.data:  # If hard clicked change difficulty to 75
-            difficulty = 75
+            difficulty = -32
         elif form.h2.data:  # If very hard clicked change difficulty to
-            difficulty = 100
-        endloop = False
-        while (not endloop):  # Keep making statements until appropriate
-            curCNF = genRanTree(50 - difficulty)  # Generate random statement with difficulty parameter
-            desc = gen_stmt(curCNF)  # convert tree to text form
-            curAST = ast(curCNF)
-
-            terminals = "".join(list(curAST.terminals.keys()))  # Get a list of terminals in a single string
-            u_results = curAST.printTruthTable()['Result']  # Get the results column from the statement's truth table
-            endloop = 1 in u_results and 0 in u_results and not isCNF(curCNF)  # Only be okay this data if its
-            # satisifiable, not a tautolgy and is not already in CNF
-
-        results = hashlib.md5(str(u_results).encode()).hexdigest()  # Hash the results column
-        # Redirect to Questions page with relevent question data as URL parameters
-        return redirect('/q?difficulty=' + str(
-            difficulty) + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
+            difficulty = -64
+        return genQuestion(difficulty)
     return render_template('questionsDifficulty.html', form=form)
 
 
@@ -810,15 +817,9 @@ def questionsDifficulty():
 def questions():
 
     # Set the form data to be blank except the question
-    error = ""
+    error = s1 = s2 = s3 = s4 = s5 = ""
     desc = request.args.get('statement')  # Get the question from URL
-    s1 = ""
-    s2 = ""
-    s3 = ""
-    s4 = ""
-    s5 = ""
-
-    form = Questions()
+    form = QuestionsForm()
     if form.validate_on_submit():
         try:
 
@@ -829,26 +830,8 @@ def questions():
             if form.see.data:  # See the CNF conversion solutions
                 parser = Parser(tokenize(desc))  # parse the statement
                 astTree = parser.parse()
-                noDI = rmN(rmDI(astTree))  # Remove double implications
-                noSI = rmN(rmSI(noDI))  # Remove single implications
-                noB = rmN(rmB(noSI))  # Put negations inwards
+                s1, s2, s3, s4, s5 = convertToCNF(astTree)
 
-                cnf1 = noB  # Convert to CNF
-                while True:
-                    cnf = genCNF(cnf1)
-                    if gen_stmt(cnf) == gen_stmt(cnf1):
-                        break
-                    else:
-
-                        cnf1 = cnf
-                simCNFp = simCon(cnf, [])
-
-                simCNF = delReps(simCNFp[0], simCNFp[1])  # Simplify
-                s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
-                s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
-                s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
-                s4 = '4. Distribute ∨ over ∧ : ' + gen_stmt(cnf)
-                s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
             if form.submit.data:  # If enter button is clicked
 
                 tokens = tokenize(form.input.data)  # Get tokens of user input
@@ -872,22 +855,9 @@ def questions():
 
                 return render_template('questions.html', form=form, desc=desc, wrong=wrong, right=right)
             if form.next.data:  # Go to next question if next question clicked
-                endloop = False
-                while (not endloop):
-                    diffculty = request.args.get('difficulty')  # Get the required difficulty from URL
-                    curCNF = genRanTree(50 - int(diffculty))  # Generate new statement based on required difficulty
-                    desc = gen_stmt(curCNF)  # Make the tree, text form
-                    curAST = ast(curCNF)
+                difficulty = int(request.args.get('difficulty'))  # Get the required difficulty from URL
+                return genQuestion(difficulty)
 
-                    terminals = "".join(list(curAST.terminals.keys()))  # Make a list of terminals in sinlge string
-                    u_results = curAST.printTruthTable()['Result']  # Get the results column of truth table of statement
-                    endloop = 1 in u_results and 0 in u_results and not isCNF(curCNF)  # Only be okay this data if its
-            # satisifiable, not a tautolgy and is not already in CNF
-
-                results = hashlib.md5(str(u_results).encode()).hexdigest() # Hash the results column
-        # Redirect to Questions page with relevent question data as URL parameters
-                return redirect(
-                    '/q?difficulty=' + diffculty + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
         except Exception as inst:
             error = str(inst)
 
