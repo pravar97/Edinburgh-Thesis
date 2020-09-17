@@ -24,6 +24,13 @@ class BinOp:
         self.op = op
 
 
+class TriOp:
+    def __init__(self, lhs, mid, rhs):
+        self.lhs = lhs
+        self.mid = mid
+        self.rhs = rhs
+
+
 class NegOP:
 
     def __init__(self, stmt):
@@ -46,7 +53,7 @@ class Parser:
 
     def expect(self, c):
         token = self.getToken()
-        if (c == token):
+        if c == token:
             self.i += 1
         else:
             raise Exception("Expected " + c + " but received " + token)
@@ -60,25 +67,26 @@ class Parser:
     def parseStmt(self):
 
         lhs = self.parseStmt1()
-        op = self.getToken()
-        rhs = self.parseStmtR()
+        mid, rhs = self.parseStmtR()
         if rhs is None:
             return lhs
         else:
-            return BinOp(lhs, op, rhs)
+            return TriOp(lhs, mid, rhs)
 
     def parseStmtR(self):
 
         token = self.getToken()
-        if token == '→' or token == '↔':
-            self.parseImp()
-            lhs = self.parseStmt1()
-            op = self.getToken()
-            rhs = self.parseStmtR()
-            if rhs is None:
-                return lhs
+        if token == '?':
+            self.i += 1
+            mid = self.parseStmt1()
+            self.expect(':')
+            rhs = self.parseStmt1()
+            end = self.parseStmtR()
+            if None in end:
+                return mid, rhs
             else:
-                return BinOp(lhs, op, rhs)
+                return mid, TriOp(rhs, end[0], end[1])
+        return None, None
 
     def parseStmt1(self):
         lhs = self.parseStmt2()
@@ -91,7 +99,7 @@ class Parser:
 
     def parseStmt1R(self):
         token = self.getToken()
-        if token == '∨':
+        if token == '↔':
             self.i += 1
             lhs = self.parseStmt2()
             op = self.getToken()
@@ -112,7 +120,7 @@ class Parser:
 
     def parseStmt2R(self):
         token = self.getToken()
-        if token == '∧':
+        if token == '→':
             self.i += 1
             lhs = self.parseStmt3()
             op = self.getToken()
@@ -123,10 +131,73 @@ class Parser:
                 return BinOp(lhs, op, rhs)
 
     def parseStmt3(self):
+        lhs = self.parseStmt4()
+        op = self.getToken()
+        rhs = self.parseStmt3R()
+        if rhs is None:
+            return lhs
+        else:
+            return BinOp(lhs, op, rhs)
+
+    def parseStmt3R(self):
+        token = self.getToken()
+        if token == '∨':
+            self.i += 1
+            lhs = self.parseStmt4()
+            op = self.getToken()
+            rhs = self.parseStmt3R()
+            if rhs is None:
+                return lhs
+            else:
+                return BinOp(lhs, op, rhs)
+
+    def parseStmt4(self):
+        lhs = self.parseStmt5()
+        op = self.getToken()
+        rhs = self.parseStmt4R()
+        if rhs is None:
+            return lhs
+        else:
+            return BinOp(lhs, op, rhs)
+
+    def parseStmt4R(self):
+        token = self.getToken()
+        if token == '⊕':
+            self.i += 1
+            lhs = self.parseStmt5()
+            op = self.getToken()
+            rhs = self.parseStmt4R()
+            if rhs is None:
+                return lhs
+            else:
+                return BinOp(lhs, op, rhs)
+
+    def parseStmt5(self):
+        lhs = self.parseStmt6()
+        op = self.getToken()
+        rhs = self.parseStmt5R()
+        if rhs is None:
+            return lhs
+        else:
+            return BinOp(lhs, op, rhs)
+
+    def parseStmt5R(self):
+        token = self.getToken()
+        if token == '∧':
+            self.i += 1
+            lhs = self.parseStmt6()
+            op = self.getToken()
+            rhs = self.parseStmt5R()
+            if rhs is None:
+                return lhs
+            else:
+                return BinOp(lhs, op, rhs)
+
+    def parseStmt6(self):
         token = self.getToken()
         if token == '¬':
             self.i += 1
-            return (NegOP(self.parseStmt3()))
+            return NegOP(self.parseStmt6())
         elif token == '(':
             self.i += 1
             output = self.parseStmt()
@@ -135,18 +206,11 @@ class Parser:
         else:
             return self.parseIdent()
 
-    def parseImp(self):
-        token = self.getToken()
-        if token == '→':
-            self.i += 1
-        else:
-            self.expect('↔')
-
     def parseIdent(self):
         token = self.getToken()
         if self.end:
             raise Exception("Unexpected end of statement")
-        if token not in ['(', ')', '¬', '∧', '∨', '→', '↔']:
+        if token not in ['(', ')', '¬', '∧', '∨', '→', '↔', '?', ':', '⊕']:
             self.i += 1
             return token
         else:
@@ -212,26 +276,8 @@ def tokenize(stream):
             tokens.append("∧")  # Add operator
 
             token = ""  # Reset for next atom
-        elif c == '→':
-            if token not in tokens:
-                identcount += 1
-            if identcount > 13:  # Enforce bounds of number of atoms
-                raise Exception("Too many atoms!")
-            tokens.append(token)  # Add atom preceding current operator
-            tokens.append("→")  # Add operator
 
-            token = ""  # Reset for next atom
-        elif c == '↔':
-            if token not in tokens:
-                identcount += 1
-            if identcount > 13:   # Enforce bounds of number of atoms
-                raise Exception("Too many atoms!")
-            tokens.append(token)  # Add atom preceding current operator
-            tokens.append("↔")  # Add operator
-
-            token = ""  # Reset for next atom
-        elif c.lower() == 'a' and not (' ' + token)[
-            -1].isalpha() and c2.lower() == 'n' and c3.lower() == 'd' and not c4.isalpha():
+        elif c.lower() == 'a' and not (' ' + token)[-1].isalpha() and c2.lower() == 'n' and c3.lower() == 'd' and not c4.isalpha():
             if token not in tokens:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
@@ -241,24 +287,46 @@ def tokenize(stream):
             token = ""  # Reset for next atom
             i += 2  # Increment loop counter more to cover additional chars in this notation
 
-        elif c == '(':
+        elif c == '^' or c == '⊕':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:  # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append("⊕")  # Add operator
+
+            token = ""  # Reset for next atom
+
+        elif c.lower() == 'x' and not (' ' + token)[-1].isalpha() and c2.lower() == 'o' and c3.lower() == 'r' and not c4.isalpha():
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:  # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append("⊕")  # Add operator
+            token = ""  # Reset for next atom
+            i += 2  # Increment loop counter more to cover additional chars in this notation
+
+        elif c == '→':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:  # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append("→")  # Add operator
+
+            token = ""  # Reset for next atom
+
+        elif c == '↔':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
-            tokens.append("(")  # Add operator
+            tokens.append("↔")  # Add operator
 
             token = ""  # Reset for next atom
-        elif c == ')':
-            if token not in tokens:
-                identcount += 1
-            if identcount > 13:   # Enforce bounds of number of atoms
-                raise Exception("Too many atoms!")
-            tokens.append(token)  # Add atom preceding current operator
-            tokens.append(")")  # Add operator
 
-            token = ""  # Reset for next atom
         elif c == '<' and (c2 == '-' or c2 == '=') and c3 == '>':
             if token not in tokens:
                 identcount += 1
@@ -278,6 +346,43 @@ def tokenize(stream):
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("→")  # Add operator
             i += 1  # Increment loop counter more to cover additional chars in this notation
+
+            token = ""  # Reset for next atom
+
+        elif c == '(':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:   # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append("(")  # Add operator
+
+            token = ""  # Reset for next atom
+        elif c == ')':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:   # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append(")")  # Add operator
+
+            token = ""  # Reset for next atom
+        elif c == '?':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:   # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append("?")  # Add operator
+
+            token = ""  # Reset for next atom
+        elif c == ':':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:   # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append(":")  # Add operator
 
             token = ""  # Reset for next atom
         elif c == '!' or c == '~' or c == '-' or c == '¬':
@@ -307,7 +412,6 @@ def tokenize(stream):
 
             tokens.append(token)  # Add atom preceding current operator
             token = ""  # Reset for next atom
-
 
         else:
             token += c
@@ -339,9 +443,11 @@ class ast:
 
         # Traversing the tree
         if isinstance(tree, BinOp):
-            return tree.op + "(" + self.ASTPrint(tree.lhs) + "," + self.ASTPrint(tree.rhs) + ")"
+            return "(" + self.ASTPrint(tree.lhs) + tree.op + self.ASTPrint(tree.rhs) + ")"
+        if isinstance(tree, TriOp):
+            return "(" + self.ASTPrint(tree.lhs) + "?" + self.ASTPrint(tree.mid) + ":" + self.ASTPrint(tree.rhs) + ")"
         elif isinstance(tree, NegOP):
-            return "Negate" + "(" + self.ASTPrint(tree.stmt) + ")"
+            return "¬" + "(" + self.ASTPrint(tree.stmt) + ")"
         else:
             # Creates a dictionary of terminals for future use
             self.terminals[tree] = False
@@ -358,12 +464,21 @@ class ast:
             # Apply operators to the sub trees
             if tree.op == '∨':
                 return lhs or rhs
+            elif tree.op == '⊕':
+                return lhs and not rhs or not lhs and rhs
             elif tree.op == '∧':
                 return lhs and rhs
             elif tree.op == '→':
                 return (not lhs) or rhs
             elif tree.op == '↔':
                 return (not lhs or rhs) and (lhs or not rhs)
+
+        elif isinstance(tree, TriOp):
+            lhs = self.isTrue(tree.lhs)
+            mid = self.isTrue(tree.mid)
+            rhs = self.isTrue(tree.rhs)
+            return (not lhs or mid) and (lhs or rhs)
+
         elif isinstance(tree, NegOP):
             return not self.isTrue(tree.stmt)
         else:  # Base case
@@ -579,7 +694,7 @@ def delReps(tree, repeats):
 
 
 def gen_stmt(tree):
-    pres = {'→': 2, '↔': 2, '∧': 0, '∨': 1}  # Keep track of precedences
+    pres = {'→': 3, '↔': 4, '∧': 0, '∨': 2, '⊕': 1}  # Keep track of precedences
     if isinstance(tree, NegOP):
         if isinstance(tree.stmt, BinOp):
             return "¬(" + gen_stmt(tree.stmt) + ")"  # We negate the entire statement
@@ -587,42 +702,48 @@ def gen_stmt(tree):
             return "¬" + gen_stmt(tree.stmt)  # This negation does not require brackets
     if isinstance(tree, BinOp):
         out = ""
-        if type(tree.lhs) == str:
-            out += tree.lhs + " "
-        elif isinstance(tree.lhs, NegOP):
-            out += gen_stmt(tree.lhs) + " "
-        elif pres[tree.lhs.op] > pres[tree.op] or pres[tree.lhs.op] == 2 and pres[tree.op] == 2:
-            out += "(" + gen_stmt(tree.lhs) + ")"  # Need brackets since the precedence of sub tree is higher than
-            # parent tree
+        if isinstance(tree.lhs, BinOp):
+            if pres[tree.lhs.op] > pres[tree.op] or pres[tree.lhs.op] > 2 and pres[tree.op] > 2:
+                out += "(" + gen_stmt(tree.lhs) + ")"  # Need brackets since the precedence of sub tree is higher than parent tree
+            else:
+                out += gen_stmt(tree.lhs)
         else:
             out += gen_stmt(tree.lhs)   # No brackets since it won't make a difference
         out += " " + tree.op + " "
-        if type(tree.rhs) == str:
-            out += tree.rhs
-        elif isinstance(tree.rhs, NegOP):
-            out += gen_stmt(tree.rhs)
-        elif pres[tree.rhs.op] > pres[tree.op] or pres[tree.rhs.op] == 2 and pres[tree.op] == 2:
-            out += "(" + gen_stmt(tree.rhs) + ")"
+        if isinstance(tree.rhs, BinOp):
+            if pres[tree.rhs.op] > pres[tree.op] or pres[tree.rhs.op] > 2 and pres[tree.op] > 2:
+                out += "(" + gen_stmt(tree.rhs) + ")"
+            else:
+                out += gen_stmt(tree.rhs)
         else:
             out += gen_stmt(tree.rhs)
         return out
+    if isinstance(tree, TriOp):
+        return "(" + gen_stmt(tree.lhs) + " ? " + gen_stmt(tree.mid) + " : " + gen_stmt(tree.rhs) + ")"
     else:
-        return tree
+        return str(tree)
 
 
 def genRanTree(s):
     if s > 128:  # Base case: return a single atom
-        return 'xyzabcdefghk'[random.randint(0, 11)]  # Randomly select an atom
+        return 'xyzabcdefg'[random.randint(0, 9)]  # Randomly select an atom
 
     ran = random.randint(s, 128)
     if ran < 64:  # Select binary if this is randomly satisfied
-        return BinOp(genRanTree(int(80 + 0.5 * s)), '↔', genRanTree(int(80 + 0.5 * s)))
-    elif ran < 96:  # Select binary if this is randomly satisfied
-        return BinOp(genRanTree(int(80 + 0.5 * s)), '→', genRanTree(int(80 + 0.5 * s)))
-    elif random.randint(0, 1):
-        return BinOp(genRanTree(int(80 + 0.5 * s)), ['∨', '∧'][random.randint(0, 1)], genRanTree(int(80 + 0.5 * s)))
+        if random.randint(0,3):
+            return BinOp(genRanTree(int(80 + 0.5 * s)), ['↔','⊕'][random.randint(0,1)], genRanTree(int(80 + 0.5 * s)))
+        else:
+            a = genRanTree(int(80 + 0.5 * s))
+            b = genRanTree(int(80 + 0.5 * s))
+            c = genRanTree(int(80 + 0.5 * s))
+            print(a)
+            print(b)
+            print(c)
+            return TriOp(a, b ,c)
+    elif ran < 112:  # Select binary if this is randomly satisfied
+        return BinOp(genRanTree(int(48 + 0.75 * s)), ['∨', '∧', '→'][random.randint(0, 2)], genRanTree(int(48 + 0.75 * s)))
     else:  # Select negation if this is randomly satisfied
-        return NegOP(genRanTree(int(80 + 0.5 * s)))
+        return NegOP(genRanTree(int(32 + 0.875 * s)))
 
 
 def isDis(tree):
@@ -640,7 +761,7 @@ def isDis(tree):
 def isCNF(tree):
     if isinstance(tree, BinOp):
         if tree.op == '∧':  # Check if we have an 'and' operator
-            return isCNF(tree.lhs) and isCNF(tree.rhs)  # Keep recurising while we see 'and's
+            return isCNF(tree.lhs) and isCNF(tree.rhs)  # Keep recursing while we see 'and's
         else:
             return isDis(tree)   # If tree is 'or', then check if its a disjunction
     if isinstance(tree, NegOP):  # If a negation it should only negate a single atom in CNF
@@ -702,7 +823,7 @@ def genQuestion(difficulty):
             break
 
     results = hashlib.md5(str(u_results).encode()).hexdigest()  # Hash the results column
-    # Redirect to Questions page with relevent question data as URL parameters
+    # Redirect to Questions page with relevant question data as URL parameters
     return redirect('/q?difficulty=' + str(
         difficulty) + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
 
@@ -767,6 +888,7 @@ def home():
             # Generate a truth table
             curAST = ast(astTree)
             output = curAST.printTruthTable()
+            print(curAST.ASTPrint(astTree))
 
             # Check whether statement is satisfiable, tautology or unsatisfiable
             if 1 in output['Result']:
@@ -801,13 +923,13 @@ def questionsDifficulty():
         if form.goHome.data:  # Go back to home page if this button clicked
             return redirect("/", code=302)
         difficulty = 0  # Default difficulty (for Medium difficulty)
-        if form.e1.data:  # If very easy clicked change difficulty to 0
+        if form.e1.data:  # If very easy clicked
             difficulty = 64
-        elif form.e2.data:  # If easy clicked change difficulty to 25
+        elif form.e2.data:  # If easy clicked
             difficulty = 32
-        elif form.h1.data:  # If hard clicked change difficulty to 75
+        elif form.h1.data:  # If hard clicked
             difficulty = -32
-        elif form.h2.data:  # If very hard clicked change difficulty to
+        elif form.h2.data:  # If very hard clicked
             difficulty = -64
         return genQuestion(difficulty)
     return render_template('questionsDifficulty.html', form=form)
