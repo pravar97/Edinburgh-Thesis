@@ -516,6 +516,34 @@ class ast:
         return output
 
 
+def rmTO(tree):
+    if isinstance(tree, NegOP):
+        return NegOP(rmTO(tree.stmt))
+
+    if isinstance(tree, BinOp):  # Apply double implication equivalent
+
+        return BinOp(rmTO(tree.lhs), tree.op, rmTO(tree.rhs))
+    if isinstance(tree, TriOp):
+        a = rmTO(tree.lhs)
+        b = rmTO(tree.mid)
+        c = rmTO(tree.rhs)
+        return BinOp(BinOp(a, '∧', b), '∨', BinOp(NegOP(a), '∧', c))
+    return tree
+
+
+def rmXOR(tree):
+    if isinstance(tree, NegOP):
+        return NegOP(rmXOR(tree.stmt))
+
+    if isinstance(tree, BinOp):  # Apply double implication equivalent
+        if tree.op == '⊕':
+            a = rmXOR(tree.lhs)
+            b = rmXOR(tree.rhs)
+            return BinOp(BinOp(NegOP(a), '∨', b), '∧', BinOp(NegOP(b), '∨', a))
+        return BinOp(rmXOR(tree.lhs), tree.op, rmXOR(tree.rhs))
+    return tree
+
+
 def rmDI(tree):
     if isinstance(tree, NegOP):
         return NegOP(rmDI(tree.stmt))
@@ -569,6 +597,8 @@ def rmN(tree):
         return NegOP(rmN(tree.stmt))
     if isinstance(tree, BinOp):
         return BinOp(rmN(tree.lhs), tree.op, rmN(tree.rhs))
+    if isinstance(tree, TriOp):
+        return TriOp(rmN(tree.lhs), rmN(tree.mid), rmN(tree.rhs))
     return tree
 
 
@@ -784,16 +814,57 @@ def isEQ(tree):
 
 
 def convertToCNF(astTree):
-    noDI = rmN(rmDI(astTree))  # Create a tree with no double implications
-    noSI = rmN(rmSI(noDI))  # Create a tree with no single implications
-    noB = rmN(rmB(noSI))  # Create a tree with negations moved in
 
-    cnf1 = noB
+    steps = {'Step': [''], 'Statement': [gen_stmt(astTree)]}
+    noN = rmN(astTree)
+    if gen_stmt(noN) != gen_stmt(astTree):
+        steps['Step'].append(' Remove redundant negation(s) ')
+        steps['Statement'].append(gen_stmt(noN))
+    noTo = rmTO(noN)
+    if gen_stmt(noN) != gen_stmt(noTo):
+        steps['Step'].append('Remove Ternary operator(s) ')
+        steps['Statement'].append(gen_stmt(noTo))
+    noNnoTo = rmN(noTo)
+    if gen_stmt(noNnoTo) != gen_stmt(noTo):
+        steps['Step'].append(' Remove redundant negation(s) ')
+        steps['Statement'].append(gen_stmt(noNnoTo))
+    noXOR = rmXOR(noNnoTo)
+    if gen_stmt(noN) != gen_stmt(noXOR):
+        steps['Step'].append(' Eliminate ⊕')
+        steps['Statement'].append(gen_stmt(noXOR))
+    noNnoXOR = rmN(noXOR)
+    if gen_stmt(noNnoXOR) != gen_stmt(noXOR):
+        steps['Step'].append(' Remove redundant negation(s) ')
+        steps['Statement'].append(gen_stmt(noNnoXOR))
+    noDi = rmDI(noNnoXOR)
+    if gen_stmt(noNnoXOR) != gen_stmt(noDi):
+        steps['Step'].append(' Eliminate ↔ ')
+        steps['Statement'].append(gen_stmt(noDi))
+    noSi = rmSI(noDi)
+    if gen_stmt(noSi) != gen_stmt(noDi):
+        steps['Step'].append(' Eliminate →')
+        steps['Statement'].append(gen_stmt(noSi))
+    noNnoSi = rmN(noSi)
+    if gen_stmt(noNnoSi) != gen_stmt(noSi):
+        steps['Step'].append(' Remove redundant negation(s) ')
+        steps['Statement'].append(gen_stmt(noNnoSi))
+    noB = rmB(noNnoSi)
+    if gen_stmt(noB) != gen_stmt(noNnoSi):
+        steps['Step'].append('Move ¬ inwards')
+        steps['Statement'].append(gen_stmt(noB))
+    noNnoB = rmN(noB)
+    if gen_stmt(noNnoB) != gen_stmt(noB):
+        steps['Step'].append(' Remove redundant negation(s) ')
+        steps['Statement'].append(gen_stmt(noNnoB))
+
+    cnf1 = noNnoB
     while True:  # Keep looping to make sure the statement is really in CNF
         cnf = genCNF(cnf1)  # Create a tree that is in CNF
         if gen_stmt(cnf) == gen_stmt(cnf1):
             break
         else:
+            steps['Step'].append('Distribute ∨ over ∧')
+            steps['Statement'].append(gen_stmt(cnf))
 
             cnf1 = cnf
     simCNFp = simCon(cnf, [])  # Simplyfy the CNF
@@ -801,13 +872,14 @@ def convertToCNF(astTree):
     simCNF = delReps(simCNFp[0], simCNFp[1])  # Delete disjunctions that are subsets of others since some
     # can be missed out in simCon
 
-    # Create Steps for students to understand
-    s1 = '1. Eliminate   ↔    : ' + gen_stmt(noDI)
-    s2 = '2. Eliminate    →    : ' + gen_stmt(noSI)
-    s3 = '3. Move  ¬   inwards  : ' + gen_stmt(noB)
-    s4 = '4. Distribute ∨ over ∧ : ' + gen_stmt(cnf)
-    s5 = '5. Simplify CNF        : ' + gen_stmt(simCNF)
-    return s1, s2, s3, s4, s5
+    if gen_stmt(cnf) != gen_stmt(simCNF):
+        steps['Step'].append('Simplify CNF')
+        steps['Statement'].append(gen_stmt(simCNF))
+
+
+    pdTable = pd.DataFrame(steps)  # Create a table data structure from truth table dictionary
+
+    return pdTable.head(len(steps['Step'])).to_html(col_space=50, classes='Table', index=False, justify='center')
 
 
 def genQuestion(difficulty):
@@ -862,8 +934,8 @@ def home():
     form = HomeForm()  # Set up the form features for homepage
 
     # Make every form output initially empty
-    error = desc = s1 = s2 = s3 = s4 = s5 = ""
-    table = None
+    error = desc = ""
+    table = steps = None
 
     # If a button has been clicked
     if form.validate_on_submit():
@@ -883,7 +955,7 @@ def home():
             astTree = parser.parse()  # Make a tree from the tokens list
 
             if form.conCNF.data:  # If the convert to CNF button is clicked
-                s1, s2, s3, s4, s5 = convertToCNF(astTree)
+                steps = convertToCNF(astTree)
 
             # Generate a truth table
             curAST = ast(astTree)
@@ -912,8 +984,7 @@ def home():
 
             table = None
 
-    return render_template('home.html', form=form, table=table, error=error, desc=desc, s1=s1, s2=s2, s3=s3, s4=s4,
-                           s5=s5)  # Return the home page but with the new data generated
+    return render_template('home.html', form=form, table=table, error=error, desc=desc, steps=steps)  # Return the home page but with the new data generated
 
 
 @app.route('/choose_question_difficulty', methods=['POST', 'GET'])

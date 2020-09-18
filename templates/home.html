@@ -11,6 +11,10 @@
     body {
     background-color: #fefee6;
 }
+td{
+padding: 0px 15px;
+}
+
 </style>
 <center>
 <div>
@@ -52,10 +56,9 @@
 
 
 
-{% if s1 %}
-<div class="alert alert-warning" role="alert">
-  {{s1}}<br>{{s2}}<br>{{s3}}<br>{{s4}}<br>{{s5}}<br>
-</div>
+{% if steps != None %}
+
+  {{ steps|safe }}
 {% endif %}
 
 <a href="https://forms.gle/GTznLxShdGjmuBTQ6"><font size="7">Submit Feedback</font></a>
