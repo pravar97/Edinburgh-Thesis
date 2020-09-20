@@ -11,6 +11,12 @@
     body {
     background-color: #fefee6;
 }
+td{
+padding: 0px 15px;
+}
+
+.tg th{font-weight:900; text-decoration:underline; padding: 0px 10px; border-style: solid; border-width: 0px 1px;}
+.tg td{text-align:center; border-style: solid; border-width: 0px 1px;}
 </style>
 <center>
 
@@ -21,15 +27,56 @@
 <h3>
   {{desc}}
     </h3>{% endif %}
-    <li>negations can be represented as 'not', '-', '~', '!'</li>
-    <li>→ can be represented as '->', '=>'</li>
-    <li>↔ can be represented as '<->', '<=>'</li>
-    <li>and can be represented as 'and', '.', '&', '*'</li>
-    <li>or can be represented as 'or', '+', '|'</li>
-    <li>negations have the highest precedence, then and, then or, then implications</li>
+    <br>
+    <table class="tg">
+<thead>
+  <tr>
+    <th>Operator</th>
+    <th>Precedence</th>
+    <th>Other Accepted Syntax</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-6nwz">¬</td>
+    <td class="tg-6nwz">1</td>
+    <td class="tg-6nwz">not - ~ !</td>
+  </tr>
+  <tr>
+    <td class="tg-6nwz">∧</td>
+    <td class="tg-6nwz">2</td>
+    <td class="tg-6nwz">and . &amp; *</td>
+  </tr>
+  <tr>
+    <td class="tg-6nwz">⊕</td>
+    <td class="tg-6nwz">3</td>
+    <td class="tg-6nwz">xor ^</td>
+  </tr>
+  <tr>
+    <td class="tg-6nwz">∨</td>
+    <td class="tg-6nwz">4</td>
+    <td class="tg-6nwz">or + |</td>
+  </tr>
+  <tr>
+    <td class="tg-6nwz">→</td>
+    <td class="tg-6nwz">5</td>
+    <td class="tg-6nwz">-&gt; =&gt;</td>
+  </tr>
+  <tr>
+    <td class="tg-6nwz">↔</td>
+    <td class="tg-6nwz">6</td>
+    <td class="tg-6nwz">&lt;-&gt; &lt;=&gt;</td>
+  </tr>
+  <tr>
+    <td class="tg-6nwz">? :</td>
+    <td class="tg-6nwz">7</td>
+    <td class="tg-6nwz"></td>
+  </tr>
+</tbody>
+</table>
 
 </div>
-    <br><br>
+
 
 
 <div class="content-section">
@@ -58,10 +105,9 @@
 
 
 
-{% if s1 %}
-<div class="alert alert-warning" role="alert">
-  {{s1}}<br>{{s2}}<br>{{s3}}<br>{{s4}}<br>{{s5}}<br>
-</div>
+{% if steps != None %}
+
+  {{ steps|safe }}
 {% endif %}
 
 <a href="https://forms.gle/GTznLxShdGjmuBTQ6"><font size="7">Submit Feedback</font></a>

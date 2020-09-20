@@ -755,25 +755,38 @@ def gen_stmt(tree):
 
 
 def genRanTree(s):
-    if s > 128:  # Base case: return a single atom
+    if s > 19:  # Base case: return a single atom
         return 'xyzabcdefg'[random.randint(0, 9)]  # Randomly select an atom
+    elif s > 14:
+        return NegOP('xyzabcdefg'[random.randint(0, 9)])
+    elif s > 13:
+        ran = random.randint(0, 2)
+    elif s > 6:
+        ran = random.randint(0, 3)
+    elif s > 0:
+        ran = random.randint(0, 5)
+    else:
+        ran = random.randint(0, 6)
 
-    ran = random.randint(s, 128)
-    if ran < 64:  # Select binary if this is randomly satisfied
-        if random.randint(0,3):
-            return BinOp(genRanTree(int(80 + 0.5 * s)), ['↔','⊕'][random.randint(0,1)], genRanTree(int(80 + 0.5 * s)))
-        else:
-            a = genRanTree(int(80 + 0.5 * s))
-            b = genRanTree(int(80 + 0.5 * s))
-            c = genRanTree(int(80 + 0.5 * s))
-            print(a)
-            print(b)
-            print(c)
-            return TriOp(a, b ,c)
-    elif ran < 112:  # Select binary if this is randomly satisfied
-        return BinOp(genRanTree(int(48 + 0.75 * s)), ['∨', '∧', '→'][random.randint(0, 2)], genRanTree(int(48 + 0.75 * s)))
-    else:  # Select negation if this is randomly satisfied
-        return NegOP(genRanTree(int(32 + 0.875 * s)))
+    if ran == 6:
+        a = genRanTree(s + 20)
+        b = genRanTree(s + 20)
+        c = genRanTree(s + 20)
+        return TriOp(a, b, c)
+    elif ran > 3:
+        a = genRanTree(s + 14)
+        b = genRanTree(s + 14)
+        return BinOp(a, ['↔', '⊕'][ran % 2], b)
+    elif ran == 3:
+        a = genRanTree(s + 7)
+        b = genRanTree(s + 7)
+        return BinOp(a, '→', b)
+    elif ran > 0:
+        a = genRanTree(s + 6)
+        b = genRanTree(s + 6)
+        return BinOp(a, ['∨', '∧'][ran % 2], b)
+    else:
+        return NegOP(genRanTree(s + 1))
 
 
 def isDis(tree):
@@ -876,7 +889,6 @@ def convertToCNF(astTree):
         steps['Step'].append('Simplify CNF')
         steps['Statement'].append(gen_stmt(simCNF))
 
-
     pdTable = pd.DataFrame(steps)  # Create a table data structure from truth table dictionary
 
     return pdTable.head(len(steps['Step'])).to_html(col_space=50, classes='Table', index=False, justify='center')
@@ -969,7 +981,7 @@ def home():
                 else:
                     desc = "Statement is a tautology"
             else:
-                desc = "Statement is unsatisfiable"
+                desc = "Statement is inconsistent"
 
             # Check if print truth table button is clicked
             if form.submit.data:
@@ -995,13 +1007,13 @@ def questionsDifficulty():
             return redirect("/", code=302)
         difficulty = 0  # Default difficulty (for Medium difficulty)
         if form.e1.data:  # If very easy clicked
-            difficulty = 64
+            difficulty = 10
         elif form.e2.data:  # If easy clicked
-            difficulty = 32
+            difficulty = 5
         elif form.h1.data:  # If hard clicked
-            difficulty = -32
+            difficulty = -5
         elif form.h2.data:  # If very hard clicked
-            difficulty = -64
+            difficulty = -10
         return genQuestion(difficulty)
     return render_template('questionsDifficulty.html', form=form)
 
@@ -1010,7 +1022,8 @@ def questionsDifficulty():
 def questions():
 
     # Set the form data to be blank except the question
-    error = s1 = s2 = s3 = s4 = s5 = ""
+    error = ""
+    steps = None
     desc = request.args.get('statement')  # Get the question from URL
     form = QuestionsForm()
     if form.validate_on_submit():
@@ -1023,7 +1036,7 @@ def questions():
             if form.see.data:  # See the CNF conversion solutions
                 parser = Parser(tokenize(desc))  # parse the statement
                 astTree = parser.parse()
-                s1, s2, s3, s4, s5 = convertToCNF(astTree)
+                steps = convertToCNF(astTree)
 
             if form.submit.data:  # If enter button is clicked
 
@@ -1054,7 +1067,7 @@ def questions():
         except Exception as inst:
             error = str(inst)
 
-    return render_template('questions.html', form=form, desc=desc, error=error, s1=s1, s2=s2, s3=s3, s4=s4, s5=s5)
+    return render_template('questions.html', form=form, desc=desc, error=error, steps=steps)
 
 
 if __name__ == '__main__':
