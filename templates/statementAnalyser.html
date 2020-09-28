@@ -1,7 +1,7 @@
 {% extends "bootstrap/base.html" %}
 
 {% import "bootstrap/wtf.html" as wtf %}
-{% block title %}Questions{% endblock %}
+{% block title %}Logic Analyser{% endblock %}
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
@@ -15,9 +15,9 @@ td{
 padding: 0px 15px;
 }
 
-
 .tg th{font-weight:900; text-decoration:underline; padding: 0px 10px; border-style: solid; border-width: 0px 1px;}
 .tg td{text-align:center; border-style: solid; border-width: 0px 1px;}
+
 </style>
   <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -28,10 +28,10 @@ padding: 0px 15px;
         <li>
           <a href="/" title="Home">Home</a>
         </li>
-        <li>
+        <li class="active">
           <a href="/statement_analyser" title="Analyse Statements">Analyse Statements</a>
         </li>
-        <li class="active">
+        <li>
           <a href="/choose_question_difficulty" title="Answer Questions">Answer Questions</a>
         </li>
 </ul>
@@ -39,15 +39,8 @@ padding: 0px 15px;
 </nav>
 <center>
 
-
 <div>
-
-    <h2>Convert the following to CNF</h2>
-        {% if desc %}
-<h3>
-  {{desc}}
-    </h3>{% endif %}
-    <br>
+    <h2>Enter your statement</h2>
     <table class="tg">
 <thead>
   <tr>
@@ -97,8 +90,6 @@ padding: 0px 15px;
 
 </div>
 
-
-
 <div class="content-section">
     <form method="POST" action="">
         <dl>
@@ -111,17 +102,18 @@ padding: 0px 15px;
 <div class="alert alert-danger" role="alert">
   {{error}}
 </div>
+{% endif %}
+{% if desc %}
+<div class="alert alert-info" role="alert">
+  {{desc}}
+</div>{% endif %}
+<div class=page>
+
+    {% if table != None %}
+    {{ table|safe }}
     {% endif %}
-    {% if wrong %}
-<div class="alert alert-danger" role="alert">
-  {{wrong}}
+
 </div>
-{% endif %}
-    {% if right %}
-<div class="alert alert-success" role="alert">
-  {{right}}
-</div>
-{% endif %}
 
 
 

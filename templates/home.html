@@ -1,7 +1,7 @@
 {% extends "bootstrap/base.html" %}
 
 {% import "bootstrap/wtf.html" as wtf %}
-{% block title %}Logic Analyser{% endblock %}
+{% block title %}Questions{% endblock %}
 {% block styles %}
 {{super()}}
 <link rel="stylesheet" href="{{url_for('.static', filename='signin.css')}}">
@@ -11,65 +11,38 @@
     body {
     background-color: #fefee6;
 }
-td{
-padding: 0px 15px;
-}
-
-.tg th{font-weight:900; text-decoration:underline; padding: 0px 10px; border-style: solid; border-width: 0px 1px;}
-.tg td{text-align:center; border-style: solid; border-width: 0px 1px;}
-
 </style>
+
+  <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Logic Analyser</a>
+    </div>
+    <ul class="nav navbar-nav">
+        <li class="active">
+          <a href="/" title="Home">Home</a>
+        </li>
+        <li>
+          <a href="/statement_analyser" title="Analyse Statements">Analyse Statements</a>
+        </li>
+        <li>
+          <a href="/choose_question_difficulty" title="Answer Questions">Answer Questions</a>
+        </li>
+</ul>
+  </div>
+</nav>
+
 <center>
+
+
 <div>
-    <h2>Enter your statement</h2>
-    <table class="tg">
-<thead>
-  <tr>
-    <th>Operator</th>
-    <th>Precedence</th>
-    <th>Other Accepted Syntax</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td class="tg-6nwz">¬</td>
-    <td class="tg-6nwz">1</td>
-    <td class="tg-6nwz">not - ~ !</td>
-  </tr>
-  <tr>
-    <td class="tg-6nwz">∧</td>
-    <td class="tg-6nwz">2</td>
-    <td class="tg-6nwz">and . &amp; *</td>
-  </tr>
-  <tr>
-    <td class="tg-6nwz">⊕</td>
-    <td class="tg-6nwz">3</td>
-    <td class="tg-6nwz">xor ^</td>
-  </tr>
-  <tr>
-    <td class="tg-6nwz">∨</td>
-    <td class="tg-6nwz">4</td>
-    <td class="tg-6nwz">or + |</td>
-  </tr>
-  <tr>
-    <td class="tg-6nwz">→</td>
-    <td class="tg-6nwz">5</td>
-    <td class="tg-6nwz">-&gt; =&gt;</td>
-  </tr>
-  <tr>
-    <td class="tg-6nwz">↔</td>
-    <td class="tg-6nwz">6</td>
-    <td class="tg-6nwz">&lt;-&gt; &lt;=&gt;</td>
-  </tr>
-  <tr>
-    <td class="tg-6nwz">? :</td>
-    <td class="tg-6nwz">7</td>
-    <td class="tg-6nwz"></td>
-  </tr>
-</tbody>
-</table>
+
+    <h1>Welcome to the Logic Analyser</h1>
+
 
 </div>
+    <br><br>
+
 
 <div class="content-section">
     <form method="POST" action="">
@@ -79,29 +52,7 @@ padding: 0px 15px;
 
     </form>
 </div>
-{% if error %}
-<div class="alert alert-danger" role="alert">
-  {{error}}
-</div>
-{% endif %}
-{% if desc %}
-<div class="alert alert-info" role="alert">
-  {{desc}}
-</div>{% endif %}
-<div class=page>
 
-    {% if table != None %}
-    {{ table|safe }}
-    {% endif %}
-
-</div>
-
-
-
-{% if steps != None %}
-
-  {{ steps|safe }}
-{% endif %}
 
 <a href="https://forms.gle/GTznLxShdGjmuBTQ6"><font size="7">Submit Feedback</font></a>
 </center>

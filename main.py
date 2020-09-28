@@ -2,6 +2,7 @@ import hashlib
 import random
 
 from flask import Flask, render_template, request
+
 import itertools
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
@@ -421,7 +422,7 @@ def tokenize(stream):
     if identcount > 13:   # Enforce bounds of number of atoms
         raise Exception("Too many atoms!")
     tokens.append(token)  # Add last token
-    while ("" in tokens):
+    while "" in tokens:
         tokens.remove("")  # Remove empty tokens
     return tokens
 
@@ -911,14 +912,18 @@ def genQuestion(difficulty):
     return redirect('/q?difficulty=' + str(
         difficulty) + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
 
-
 class HomeForm(FlaskForm):
+    submit = SubmitField('Analyse Statements')
+    ques = SubmitField('Answer Questions')
+
+
+class statementForm(FlaskForm):
     #  Set up buttons and text boxes
     input = StringField(' ')
     submit = SubmitField('Display Truth Table')
     genRan = SubmitField('Generate Random Statement')
     conCNF = SubmitField('Convert to CNF')
-    ques = SubmitField('Answer Questions')
+    goHome = SubmitField('Return to Homepage')
 
 
 class QuestionsForm(FlaskForm):
@@ -945,6 +950,21 @@ class QuestionsDifficultyForm(FlaskForm):
 def home():
     form = HomeForm()  # Set up the form features for homepage
 
+    # If a button has been clicked
+    if form.validate_on_submit():
+
+        if form.ques.data:  # If its Questions button, redirect the user
+            return redirect('/choose_question_difficulty')
+        else:
+            return redirect('/statement_analyser')
+
+    return render_template('home.html', form=form)  # Return the home page but with the new data generated
+
+
+@app.route('/statement_analyser', methods=['POST', 'GET'])
+def statementAnalyser():
+    form = statementForm()  # Set up the form features for homepage
+
     # Make every form output initially empty
     error = desc = ""
     table = steps = None
@@ -953,12 +973,11 @@ def home():
     if form.validate_on_submit():
 
         try:
+            if form.goHome.data:  # Go back to home page if this button clicked
+                return redirect("/", code=302)
             if form.genRan.data:  # If its the random statement gen button
                 astTree = genRanTree(0)  # Get a random tree
                 form.input.data = gen_stmt(astTree)  # Set the textbox to that random statement
-
-            if form.ques.data:  # If its Questions button, redirect the user
-                return redirect('/choose_question_difficulty')
 
             tokens = tokenize(form.input.data)  # Make a list of tokens based on textbox input
             if len(tokens) == 0:
@@ -985,9 +1004,11 @@ def home():
 
             # Check if print truth table button is clicked
             if form.submit.data:
+                result = gen_stmt(astTree)
+                output[result] = output.pop('Result')
                 pdTable = pd.DataFrame(output)  # Create a table data structure from truth table dictionary
 
-                table = pdTable.head(len(output['Result'])).to_html(col_space=50, classes='Table')  # Generate HTML
+                table = pdTable.head(len(output[result])).to_html(col_space=50, classes='Table')  # Generate HTML
                 # code for tables
             else:
                 table = None
@@ -996,7 +1017,8 @@ def home():
 
             table = None
 
-    return render_template('home.html', form=form, table=table, error=error, desc=desc, steps=steps)  # Return the home page but with the new data generated
+    return render_template('statementAnalyser.html', form=form, table=table, error=error, desc=desc,
+                           steps=steps)  # Return the home page but with the new data generated
 
 
 @app.route('/choose_question_difficulty', methods=['POST', 'GET'])
