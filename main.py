@@ -924,6 +924,7 @@ def updateStats(stats, difficulty, correctness):
 class HomeForm(FlaskForm):
     submit = SubmitField('Analyse Statements')
     ques = SubmitField('Answer Questions')
+    les = SubmitField('Learn the Basics')
 
 
 class statementForm(FlaskForm):
@@ -955,6 +956,11 @@ class QuestionsDifficultyForm(FlaskForm):
     goHome = SubmitField('Return to Homepage')
 
 
+class LessonsHomeForm(FlaskForm):
+    l1 = SubmitField('Lessons 1')
+    submit = SubmitField('Return to Homepage')
+
+
 @app.route('/', methods=['POST', 'GET'])
 def home():
     form = HomeForm()  # Set up the form features for homepage
@@ -964,6 +970,8 @@ def home():
 
         if form.ques.data:  # If its Questions button, redirect the user
             return redirect('/choose_question_difficulty')
+        elif form.les.data:
+            return redirect('/lessonsHome')
         else:
             return redirect('/statement_analyser')
 
@@ -1107,9 +1115,16 @@ def questions():
     return render_template('questions.html', form=form, desc=desc, error=error, steps=steps)
 
 
-@app.route('/learn', methods=['POST', 'GET'])
-def learn():
-    return 'hi'
+@app.route('/lessonsHome', methods=['POST', 'GET'])
+def lessonsHome():
+    form = LessonsHomeForm()
+    if form.validate_on_submit():
+        if form.l1.data:
+            a = 1
+        else:
+            return redirect("/", code=302)  # Go to home page
+
+    return render_template('lessonsHome.html', form=form)
 
 
 if __name__ == '__main__':
