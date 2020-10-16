@@ -1,4 +1,5 @@
 import hashlib
+import json
 import random
 
 from flask import Flask, render_template, request
@@ -540,7 +541,7 @@ def rmXOR(tree):
         if tree.op == '⊕':
             a = rmXOR(tree.lhs)
             b = rmXOR(tree.rhs)
-            return BinOp(BinOp(NegOP(a), '∨', b), '∧', BinOp(NegOP(b), '∨', a))
+            return BinOp(BinOp(NegOP(a), '∧', b), '∨', BinOp(NegOP(b), '∧', a))
         return BinOp(rmXOR(tree.lhs), tree.op, rmXOR(tree.rhs))
     return tree
 
@@ -912,6 +913,14 @@ def genQuestion(difficulty):
     return redirect('/q?difficulty=' + str(
         difficulty) + '&statement=' + desc + '&terminals=' + terminals + '&results=' + results)
 
+
+def updateStats(stats, difficulty, correctness):
+
+    diffmap = {10: 'very easy', 5: 'easy', 0: 'medium', -5: 'hard', -10: 'very hard'}
+    stats[diffmap[difficulty]][correctness] += 1
+    with open('stats.json', 'w') as f:
+        json.dump(stats, f)
+
 class HomeForm(FlaskForm):
     submit = SubmitField('Analyse Statements')
     ques = SubmitField('Answer Questions')
@@ -1048,6 +1057,8 @@ def questions():
     steps = None
     desc = request.args.get('statement')  # Get the question from URL
     form = QuestionsForm()
+
+    difficulty = int(request.args.get('difficulty'))  # Get the required difficulty from URL
     if form.validate_on_submit():
         try:
 
@@ -1067,14 +1078,19 @@ def questions():
                     raise Exception("Input Field is empty")
                 parser = Parser(tokens)
                 astTree = parser.parse()  # Parse the user input
+                with open('stats.json') as f:
+                    stats = json.load(f)
                 if isCNF(astTree):  # Check if user input is in CNF
                     if isEQ(astTree):  # Check if user input is equivalent to question
                         wrong = ''
                         right = 'Well done, your CNF is correct :)'
+                        updateStats(stats, difficulty, 'right')
                     else:
+                        updateStats(stats, difficulty, 'wrong')
                         wrong = 'Statement is in CNF but it is not equivalent'
                         right = ''
                 else:
+                    updateStats(stats, difficulty, 'wrong')
                     right = ''
                     if isEQ(astTree):
                         wrong = 'Statement is equivalent but it is not in CNF'
@@ -1083,7 +1099,6 @@ def questions():
 
                 return render_template('questions.html', form=form, desc=desc, wrong=wrong, right=right)
             if form.next.data:  # Go to next question if next question clicked
-                difficulty = int(request.args.get('difficulty'))  # Get the required difficulty from URL
                 return genQuestion(difficulty)
 
         except Exception as inst:
@@ -1092,5 +1107,10 @@ def questions():
     return render_template('questions.html', form=form, desc=desc, error=error, steps=steps)
 
 
+@app.route('/learn', methods=['POST', 'GET'])
+def learn():
+    return 'hi'
+
+
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    app.run(debug=True)
