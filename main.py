@@ -957,7 +957,7 @@ class QuestionsDifficultyForm(FlaskForm):
 
 
 class LessonsHomeForm(FlaskForm):
-    l1 = SubmitField('Lessons 1')
+    learn = SubmitField('Course Webpage')
     submit = SubmitField('Return to Homepage')
 
 
@@ -1119,8 +1119,8 @@ def questions():
 def lessonsHome():
     form = LessonsHomeForm()
     if form.validate_on_submit():
-        if form.l1.data:
-            a = 1
+        if form.learn.data:
+            return  redirect("https://course.inf.ed.ac.uk/inf1a")
         else:
             return redirect("/", code=302)  # Go to home page
 
