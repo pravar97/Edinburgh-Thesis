@@ -844,7 +844,7 @@ def convertToCNF(astTree):
         steps['Step'].append(' Remove redundant negation(s) ')
         steps['Statement'].append(gen_stmt(noNnoTo))
     noXOR = rmXOR(noNnoTo)
-    if gen_stmt(noN) != gen_stmt(noXOR):
+    if gen_stmt(noNnoTo) != gen_stmt(noXOR):
         steps['Step'].append(' Eliminate ⊕')
         steps['Statement'].append(gen_stmt(noXOR))
     noNnoXOR = rmN(noXOR)
@@ -924,7 +924,7 @@ def updateStats(stats, difficulty, correctness):
 class HomeForm(FlaskForm):
     submit = SubmitField('Analyse Statements')
     ques = SubmitField('Answer Questions')
-    les = SubmitField('Learn the Basics')
+    les = SubmitField('Course Homepage')
 
 
 class statementForm(FlaskForm):
@@ -971,7 +971,7 @@ def home():
         if form.ques.data:  # If its Questions button, redirect the user
             return redirect('/choose_question_difficulty')
         elif form.les.data:
-            return redirect('/lessonsHome')
+            return redirect('https://course.inf.ed.ac.uk/inf1a')
         else:
             return redirect('/statement_analyser')
 
