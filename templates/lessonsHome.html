@@ -11,6 +11,9 @@
     body {
     background-color: #fefee6;
 }
+a{
+cursor: pointer;
+}
 </style>
 
   <nav class="navbar navbar-default">
@@ -20,13 +23,13 @@
     </div>
     <ul class="nav navbar-nav">
         <li>
-          <a href="/" title="Home">Home</a>
+          <a onclick="window.location='/'+window.location.search;" title="Home">Home</a>
         </li>
         <li>
-          <a href="/statement_analyser" title="Analyse Statements">Analyse Statements</a>
+          <a onclick="window.location='/statement_analyser'+window.location.search;" title="Analyse Statements">Analyse Statements</a>
         </li>
         <li>
-          <a href="/choose_question_difficulty" title="Answer Questions">Answer Questions</a>
+          <a onclick="window.location='/choose_question_difficulty'+window.location.search;" title="Answer Questions">Answer Questions</a>
         </li>
         <li class="active">
           <a href="/lessonsHome" title="Learn the Basics">Learn the Basics</a>
