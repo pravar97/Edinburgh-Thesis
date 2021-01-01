@@ -112,7 +112,10 @@ def makeAtomsSet(tree):
         # Recurse until we just have atoms/ negated atoms
         atomset.update(makeAtomsSet(tree.lhs))
         atomset.update(makeAtomsSet(tree.rhs))
-    atomset.add(tree)   # Add this to atom set
+    else:
+        if isinstance(tree, NegOP):
+            tree = '¬' + tree.stmt
+        atomset.add(tree)   # Add this to atom set
     return atomset
 
 
@@ -122,10 +125,32 @@ def makeConSet(tree):
         if tree.op == '∧':
             conset.update(makeConSet(tree.lhs))
             conset.update(makeConSet(tree.rhs))
+            return conset
     tset = makeAtomsSet(tree)
-    if not [x for x in tset if NegOP(x) in tset]:
-        conset.add(tset)
+
+    if not [x for x in tset if '¬' + x in tset]:
+        print(tset)
+        conset.add(frozenset(tset))
+    print(conset)
     return conset
+
+
+def set2Dis(stmtset):
+    stmtlist = list(stmtset)
+    if stmtlist[0][0] == '¬':
+        stmtlist[0] = NegOP(stmtlist[0][1])
+    if len(stmtlist) == 1:
+        return stmtlist[0]
+    return BinOp(stmtlist[0], '∨', set2Dis(stmtlist[1:]))
+
+
+def set2Con(stmtset):
+    stmtlist = list(stmtset)
+    if not stmtlist:
+        return 'Statement is a tautology'
+    if len(stmtlist) == 1:
+        return set2Dis(stmtlist[0])
+    return BinOp(set2Dis(stmtlist[0]), '∧', set2Con(stmtlist[1:]))
 
 def simCon2(tree):
 
@@ -139,6 +164,7 @@ def simCon2(tree):
             if consetlist[i].issubset(consetlist[j]):
                 conset.remove(consetlist[j])
 
+    return set2Con(conset)
 
 
 def simDis(tree, seen=None):
@@ -173,13 +199,6 @@ def simDis(tree, seen=None):
     return tree, seen
 
 
-def makeDis(stmtset):
-    stmtlist = list(stmtset)
-    if len(stmtlist) == 1:
-        return stmtlist[0]
-    return BinOp(stmtlist[0], '∨', makeDis(stmtlist[1:]))
-
-
 def simCon(tree, repeats=None):
     if repeats is None:
         repeats = []
@@ -195,7 +214,7 @@ def simCon(tree, repeats=None):
             if len([x for x in stmtset if '¬' + x in stmtset]) > 0:
                 return "Statement is always True", repeats
             else:
-                stmt = makeDis(stmtset)
+                stmt = set2Dis(stmtset)
             for r in repeats:
                 if r.issubset(stmtset):  # If this disjunction has been repeated  or is a subset of a previous one
                     # its redundant
@@ -302,9 +321,10 @@ def convertToCNF(astTree, justCNF=False):
             steps['Statement'].append(gen_stmt(cnf))
 
             cnf1 = cnf
-    simCNFp = simCon(cnf, [])  # Simplyfy the CNF
+    #simCNFp = simCon(cnf, [])  # Simplyfy the CNF
 
-    simCNF = delReps(simCNFp[0], simCNFp[1])  # Delete disjunctions that are subsets of others since some
+    #simCNF = delReps(simCNFp[0], simCNFp[1])  # Delete disjunctions that are subsets of others since some
+    simCNF = simCon2(cnf)
     # can be missed out in simCon
 
     if gen_stmt(cnf) != gen_stmt(simCNF):

@@ -19,7 +19,7 @@ app = Flask(__name__)
 Bootstrap(app)
 app.config['SECRET_KEY'] = 'bdd9761c62d68ea530872f8848107c21'
 userData = {}
-capacity = 5
+capacity = 500
 
 
 def genNewUser(userID=None):
@@ -28,6 +28,8 @@ def genNewUser(userID=None):
     if userID is None:
         userID = str(uuid4())
     userData[userID] = {}
+    userData[userID]['Q#'] = 0
+    userData[userID]['SQ#'] = 1
     if len(userData) >= capacity:
         userData.pop(next(iter(userData)))
     return userID
@@ -233,6 +235,8 @@ def questionsDifficulty():
             difficulty = -10
 
         setUserData('cur_question', genQuestion(difficulty))
+        setUserData('Q#', getUserData('Q#') + 1)
+        setUserData('SQ#', 1)
         setUserData('difficulty', difficulty)
         return rd('/q')
     return render_template('questionsDifficulty.html', form=form)
@@ -246,9 +250,10 @@ def questions():
     cur_question = getUserData('cur_question')
     if cur_question is None:
         return rd('/choose_question_difficulty')
-    desc = gen_stmt(cur_question)
 
     stage, q, solution = getSubQ(cur_question)
+    q_num = 'Q' + str(getUserData('Q#')) + '.' + str(getUserData('SQ#')) + ' '
+    q[0] = q_num + q[0]
 
     form = QuestionsForm()
 
@@ -274,7 +279,7 @@ def questions():
                 user_tree = user_parser.parse()  # Parse the user input
 
                 pos_wrongs = {
-                    -1: 'Statement is not equivalent',
+                    -1: 'Statement is not equivalent. Hint: Please consider precedence or use of brackets',
                     1: 'Entered Statement is equivalent but there are still redundant negations',
                     2: 'Entered Statement is equivalent but there are still ternary operator(s)',
                     3: 'Entered Statement is equivalent but there are still XOR operator(s)',
@@ -303,6 +308,10 @@ def questions():
                 setUserData('next_question', None)
                 if isCNF(next_question) or next_question is None:
                     next_question = genQuestion(difficulty)
+                    setUserData('Q#', getUserData('Q#')+1)
+                    setUserData('SQ#', 1)
+                else:
+                    setUserData('SQ#', getUserData('SQ#') + 1)
                 setUserData('cur_question', next_question)
                 return rd('/q')
 
