@@ -129,9 +129,9 @@ def makeConSet(tree):
     tset = makeAtomsSet(tree)
 
     if not [x for x in tset if '¬' + x in tset]:
-        print(tset)
+
         conset.add(frozenset(tset))
-    print(conset)
+
     return conset
 
 

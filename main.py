@@ -180,15 +180,15 @@ def statementAnalyser():
             if len(tokens) == 0:
                 raise Exception("Input Field is empty")
             parser = Parser(tokens)
-            astTree = parser.parse()  # Make a tree from the tokens list
+            tree = parser.parse()  # Make a tree from the tokens list
 
             if form.conCNF.data:  # If the convert to CNF button is clicked
-                steps = convertToCNF(astTree)
+                steps = convertToCNF(tree)
 
             # Generate a truth table
-            curAST = ast(astTree)
+            curAST = ast(tree)
             output = curAST.printTruthTable()
-            print(curAST.ASTPrint(astTree))
+
 
             # Check whether statement is satisfiable, tautology or unsatisfiable
             if 1 in output['Result']:
@@ -201,7 +201,7 @@ def statementAnalyser():
 
             # Check if print truth table button is clicked
             if form.submit.data:
-                result = gen_stmt(astTree)
+                result = gen_stmt(tree)
                 output[result] = output.pop('Result')
                 pdTable = pd.DataFrame(output)  # Create a table data structure from truth table dictionary
 
@@ -245,21 +245,29 @@ def questionsDifficulty():
 @app.route('/q', methods=['POST', 'GET'])
 def questions():
     # Set the form data to be blank except the question
-    error = wrong = right = ""
+    error = wrong = right = table = ""
     steps = None
     cur_question = getUserData('cur_question')
-    if cur_question is None:
-        return rd('/choose_question_difficulty')
-
-    stage, q, solution = getSubQ(cur_question)
-    q_num = 'Q' + str(getUserData('Q#')) + '.' + str(getUserData('SQ#')) + ' '
-    q[0] = q_num + q[0]
-
-    form = QuestionsForm()
-
+    curAST = ast(cur_question)
     difficulty = getUserData('difficulty')
     if difficulty is None:
         return rd('/choose_question_difficulty')
+    if cur_question is None:
+        return rd('/choose_question_difficulty')
+    sq_num = getUserData('SQ#')
+    if type(cur_question) == tuple:
+        q = ['Form a statement that satisfies this truth table:']
+        table = cur_question[0]
+        solution = cur_question[1]
+        cur_question = solution
+        stage = -1
+    else:
+        stage, q, solution = getSubQ(cur_question)
+
+    q_num = 'Q' + str(getUserData('Q#')) + '.' + str(sq_num) + ' '
+    q[0] = q_num + q[0]
+
+    form = QuestionsForm()
     if form.validate_on_submit():
         try:
 
@@ -302,7 +310,7 @@ def questions():
                 else:
                     updateStats(stats, difficulty, 'wrong')
                     wrong = pos_wrongs[-1]
-                return render_template('questions.html', form=form, q=q, wrong=wrong, right=right)
+                return render_template('questions.html', form=form, q=q, wrong=wrong, table=table, right=right)
             if form.next.data:  # Go to next question if next question clicked
                 next_question = getUserData('next_question')
                 setUserData('next_question', None)
@@ -318,7 +326,7 @@ def questions():
         except Exception as inst:
             error = str(inst)
 
-    return render_template('questions.html', form=form, q=q, error=error, steps=steps)
+    return render_template('questions.html', form=form, q=q, error=error, table=table, steps=steps)
 
 
 @app.route('/lessonsHome', methods=['POST', 'GET'])

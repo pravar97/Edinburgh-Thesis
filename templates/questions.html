@@ -53,6 +53,13 @@ cursor: pointer;
 <h3>
   {{i}}
     </h3>{% endfor %}
+    <div class=page>
+
+    {% if table != None %}
+    {{ table|safe }}
+    {% endif %}
+
+</div>
     <br>
 
     <table class="tg">
