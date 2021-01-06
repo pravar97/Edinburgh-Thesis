@@ -152,7 +152,8 @@ def set2Con(stmtset):
         return set2Dis(stmtlist[0])
     return BinOp(set2Dis(stmtlist[0]), '∧', set2Con(stmtlist[1:]))
 
-def simCon2(tree):
+
+def simCNF(tree):
 
     conset = makeConSet(tree)
     consetlist = list(conset)
@@ -165,104 +166,6 @@ def simCon2(tree):
                 conset.remove(consetlist[j])
 
     return set2Con(conset)
-
-
-def simDis(tree, seen=None):
-    if seen is None:
-        seen = []
-    if isinstance(tree, BinOp):
-
-        lhs, seen = simDis(tree.lhs, seen)
-        if seen == 'delete clause':
-            return None, seen  # if sub tree is redundant so is whole tree so keep returning delete
-        rhs, seen = simDis(tree.rhs, seen)
-        if seen == 'delete clause':
-            return None, seen  # if sub tree is redundant so is whole tree so keep returning delete
-
-        if lhs is None:
-            return rhs, seen  # to delete left return just right
-        if rhs is None:
-            return lhs, seen  # to delete left return just right
-        return BinOp(lhs, '∨', rhs), seen  # No action needed just return
-
-    if isinstance(tree, NegOP):
-        if tree.stmt in seen:
-            return None, 'delete clause'  # Since we detect a tautology
-        tree = '¬' + tree.stmt
-    else:
-        if '¬' + tree in seen:
-            return None, 'delete clause'  # Since we detect a tautology
-    if tree in seen:
-        return None, seen  # We detect a repeated atom/negated atom, so None tells parent to delete the atom
-
-    seen.append(tree)  # Update seen atoms for future reference
-    return tree, seen
-
-
-def simCon(tree, repeats=None):
-    if repeats is None:
-        repeats = []
-    if isinstance(tree, BinOp):
-        if tree.op == '∨':  # If disjunction
-
-            # stmt, seen = simDis(tree, [])  # Simplify the disjunction
-            # if seen == 'delete clause':
-            #     return "Statement is always True", repeats  # we detect disjunction is redundant, so return to parent
-                # function this info
-
-            stmtset = makeAtomsSet(tree)  # Convert statement to set of atoms
-            if len([x for x in stmtset if '¬' + x in stmtset]) > 0:
-                return "Statement is always True", repeats
-            else:
-                stmt = set2Dis(stmtset)
-            for r in repeats:
-                if r.issubset(stmtset):  # If this disjunction has been repeated  or is a subset of a previous one
-                    # its redundant
-                    return "Statement is always True", repeats  # Indicate Redundancy to parent function
-            repeats.append(stmtset)  # Add disjunction set to repeats for future reference
-            return stmt, repeats
-        if tree.op == '∧':
-
-            # Traverse until not 'and' operator
-            lhs, repeats = simCon(tree.lhs, repeats)
-            rhs, repeats = simCon(tree.rhs, repeats)
-            if lhs == "Statement is always True":
-                return rhs, repeats  # if we delete the left sub tree, just return the right
-            if rhs == "Statement is always True":
-                return lhs, repeats  # if we delete the right sub tree, just return the left
-            return BinOp(lhs, '∧', rhs), repeats  # Nothing gets deleted, return the statement
-
-    stmtset = makeAtomsSet(tree)
-    for r in repeats:
-        if r.issubset(stmtset):  # Check if this single atom disjunction has been repeated or has been covered in
-            # another disjunction
-            return "Statement is always True", repeats
-    repeats.append(stmtset)
-    return tree, repeats
-
-
-def delReps(tree, repeats):
-    if isinstance(tree, BinOp):
-        if tree.op == '∧':
-
-            # Traverse the tree until we find something to delete
-            lhs = delReps(tree.lhs, repeats)
-            rhs = delReps(tree.rhs, repeats)
-            if lhs == "Delete":
-                return rhs
-            if rhs == "Delete":
-                return lhs
-
-            # There was nothing to delete so function done
-            return BinOp(lhs, '∧', rhs)
-
-    for r in repeats:
-        stmtset = makeAtomsSet(tree)  # Make set of atoms, where a set is a disjunction
-        if r.issubset(stmtset) and r != stmtset:  # If there is a subset the disjunction is redundant, if the sets
-            # are equal then don't delete since it is likely this is the only instance and is not a repeat,
-            # the repeat of this would have already been removed in equal scenarios
-            return "Delete"
-    return tree
 
 
 def convertToCNF(astTree, justCNF=False):
@@ -321,15 +224,12 @@ def convertToCNF(astTree, justCNF=False):
             steps['Statement'].append(gen_stmt(cnf))
 
             cnf1 = cnf
-    #simCNFp = simCon(cnf, [])  # Simplyfy the CNF
 
-    #simCNF = delReps(simCNFp[0], simCNFp[1])  # Delete disjunctions that are subsets of others since some
-    simCNF = simCon2(cnf)
-    # can be missed out in simCon
+    CNF_sim = simCNF(cnf)
 
-    if gen_stmt(cnf) != gen_stmt(simCNF):
+    if gen_stmt(cnf) != gen_stmt(CNF_sim):
         steps['Step'].append('Simplify CNF')
-        steps['Statement'].append(gen_stmt(simCNF))
+        steps['Statement'].append(gen_stmt(CNF_sim))
     pdTable = pd.DataFrame(steps)  # Create a table data structure from truth table dictionary
 
     return pdTable.head(len(steps['Step'])).to_html(col_space=50, classes='Table', index=False, justify='center')

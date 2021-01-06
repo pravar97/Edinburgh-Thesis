@@ -26,5 +26,21 @@ def isCNF(tree):
     return type(tree) == str  # Single atoms are in CNF always
 
 
-def isEQ(a, b):
-    return 1 not in ast(BinOp(a, '⊕', b)).printTruthTable()['Result']
+def isEQ(a, b, hint=None):
+    tt = ast(BinOp(a, '⊕', b)).printTruthTable()
+    eq = 1 not in tt['Result']
+    if hint is None:
+        return eq
+    trues = []
+    falses = []
+    if not eq:
+        eg = tt['Result'].index(1)
+        for atom in tt:
+            if atom == 'Result':
+                continue
+            if tt[atom][eg]:
+                trues.append(atom)
+            else:
+                falses.append(atom)
+
+    return eq, trues, falses

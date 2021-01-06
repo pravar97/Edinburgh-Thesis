@@ -1,18 +1,14 @@
-import json
-from uuid import uuid4
 from statementPreProcessing import *
 from statementManipulations import *
 from statementCheckers import *
 
+import json
+from uuid import uuid4
 from flask import Flask, render_template, request
-
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
-
 from wtforms import StringField, SubmitField
-
 from flask_bootstrap import Bootstrap
-
 import pandas as pd
 
 app = Flask(__name__)
@@ -35,11 +31,11 @@ def genNewUser(userID=None):
     return userID
 
 
-def getUserData(key):
+def getUserData(key, default_return=None):
     global userData
     userID = request.args.get("userID")
     if userID is None:
-        return None
+        return default_return
     if userID not in userData:
         genNewUser(userID)
     else:
@@ -49,7 +45,7 @@ def getUserData(key):
     elif key in userData[userID]:
         return userData[userID][key]
     else:
-        return None
+        return default_return
 
 
 def setUserData(key, value):
@@ -103,7 +99,7 @@ def getSubQ(astTree):
 class HomeForm(FlaskForm):
     submit = SubmitField('Analyse Statements')
     ques = SubmitField('Answer Questions')
-    les = SubmitField('Course Homepage')
+    chp = SubmitField('Inf1a Course Page')
 
 
 class statementForm(FlaskForm):
@@ -137,8 +133,10 @@ class QuestionsDifficultyForm(FlaskForm):
 
 
 class LessonsHomeForm(FlaskForm):
-    learn = SubmitField('Course Webpage')
+    l1 = SubmitField('Lesson 1: Atoms')
     submit = SubmitField('Return to Homepage')
+
+# class LessonForm(FlaskForm):
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -150,8 +148,8 @@ def home():
 
         if form.ques.data:  # If its Questions button, redirect the user
             return rd('/choose_question_difficulty')
-        elif form.les.data:
-            return rd('https://course.inf.ed.ac.uk/inf1a')
+        elif form.chp.data:
+            return redirect('https://course.inf.ed.ac.uk/inf1a')
         else:
             return rd('/statement_analyser')
 
@@ -188,7 +186,6 @@ def statementAnalyser():
             # Generate a truth table
             curAST = ast(tree)
             output = curAST.printTruthTable()
-
 
             # Check whether statement is satisfiable, tautology or unsatisfiable
             if 1 in output['Result']:
@@ -235,7 +232,7 @@ def questionsDifficulty():
             difficulty = -10
 
         setUserData('cur_question', genQuestion(difficulty))
-        setUserData('Q#', getUserData('Q#') + 1)
+        setUserData('Q#', getUserData('Q#', 0) + 1)
         setUserData('SQ#', 1)
         setUserData('difficulty', difficulty)
         return rd('/q')
@@ -247,14 +244,14 @@ def questions():
     # Set the form data to be blank except the question
     error = wrong = right = table = ""
     steps = None
+
     cur_question = getUserData('cur_question')
-    curAST = ast(cur_question)
     difficulty = getUserData('difficulty')
-    if difficulty is None:
-        return rd('/choose_question_difficulty')
-    if cur_question is None:
-        return rd('/choose_question_difficulty')
     sq_num = getUserData('SQ#')
+    q_num = getUserData('Q#')
+    if None in [q_num, sq_num, difficulty, cur_question]:
+        return rd('/choose_question_difficulty')
+
     if type(cur_question) == tuple:
         q = ['Form a statement that satisfies this truth table:']
         table = cur_question[0]
@@ -264,8 +261,7 @@ def questions():
     else:
         stage, q, solution = getSubQ(cur_question)
 
-    q_num = 'Q' + str(getUserData('Q#')) + '.' + str(sq_num) + ' '
-    q[0] = q_num + q[0]
+    q[0] = 'Q' + str(q_num) + '.' + str(sq_num) + ' ' + q[0]
 
     form = QuestionsForm()
     if form.validate_on_submit():
@@ -287,7 +283,7 @@ def questions():
                 user_tree = user_parser.parse()  # Parse the user input
 
                 pos_wrongs = {
-                    -1: 'Statement is not equivalent. Hint: Please consider precedence or use of brackets',
+                    -1: 'Statement is not equivalent, for example when ',
                     1: 'Entered Statement is equivalent but there are still redundant negations',
                     2: 'Entered Statement is equivalent but there are still ternary operator(s)',
                     3: 'Entered Statement is equivalent but there are still XOR operator(s)',
@@ -299,7 +295,8 @@ def questions():
                 }
                 with open('stats.json') as f:
                     stats = json.load(f)
-                if isEQ(user_tree, cur_question):  # Check if user input is equivalent to question
+                eq, trues, falses = isEQ(user_tree, cur_question, hint=True)
+                if eq:  # Check if user input is equivalent to question
                     if getSubQ(user_tree)[0] != stage:
                         right = 'Well done, your answer is correct :) Please click \'Next Question\''
                         updateStats(stats, difficulty, 'right')
@@ -310,16 +307,23 @@ def questions():
                 else:
                     updateStats(stats, difficulty, 'wrong')
                     wrong = pos_wrongs[-1]
+                    if trues:
+                        wrong += ', '.join(trues) + ' are true'
+                        if falses:
+                            wrong += ' and ' + ', '.join(falses) + ' are false'
+                    else:
+                        wrong += ', '.join(falses) + ' are false'
+
                 return render_template('questions.html', form=form, q=q, wrong=wrong, table=table, right=right)
             if form.next.data:  # Go to next question if next question clicked
                 next_question = getUserData('next_question')
                 setUserData('next_question', None)
                 if isCNF(next_question) or next_question is None:
                     next_question = genQuestion(difficulty)
-                    setUserData('Q#', getUserData('Q#')+1)
+                    setUserData('Q#', getUserData('Q#', 0)+1)
                     setUserData('SQ#', 1)
                 else:
-                    setUserData('SQ#', getUserData('SQ#') + 1)
+                    setUserData('SQ#', getUserData('SQ#', 0) + 1)
                 setUserData('cur_question', next_question)
                 return rd('/q')
 
@@ -332,13 +336,33 @@ def questions():
 @app.route('/lessonsHome', methods=['POST', 'GET'])
 def lessonsHome():
     form = LessonsHomeForm()
+
+    if form.validate_on_submit():
+        lessons = [form.l1.data]
+        for i in range(1):
+            if lessons[i]:
+                setUserData('L#', i+1)
+                return rd("/l")
+
+        return rd("/", code=302)  # Go to home page
+
+    return render_template('lessonsHome.html', form=form)
+
+
+@app.route('/l', methods=['POST', 'GET'])
+def lesson():
+    lnum = getUserData('L#')
+    if lnum is None:
+        return rd('/lessonsHome')
+    title = 'Lesson ' + str(lnum)
+    form = LessonsHomeForm()
     if form.validate_on_submit():
         if form.learn.data:
             return redirect("https://course.inf.ed.ac.uk/inf1a")
         else:
             return rd("/", code=302)  # Go to home page
 
-    return render_template('lessonsHome.html', form=form)
+    return render_template('lesson.html', title=title, form=form)
 
 
 if __name__ == '__main__':

@@ -174,6 +174,8 @@ class Parser:
         if self.end:
             raise Exception("Unexpected end of statement")
         if token not in ['(', ')', '¬', '∧', '∨', '→', '↔', '?', ':', '⊕']:
+            if token == 'Result':
+                token = 'result'
             self.i += 1
             return token
         else:
@@ -210,7 +212,7 @@ def tokenize(stream):
             c3 = 'a'
             c4 = 'a'
 
-        if c == '+' or c == '∨' or c == '|':
+        if c == '+' or c == '∨' or c == '|' or c == 'v':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
