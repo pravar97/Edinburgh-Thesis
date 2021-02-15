@@ -1,0 +1,5 @@
+[2021-02-15 15:19:13.832688] 1 Unique Users
+[2021-02-15 15:22:04.381646] 1 Unique Users
+[2021-02-15 15:22:32.662707] Question: Q1.1 Form a statement that satisfies this Truth Table:, User Response: ¬a ∧ ¬b ∧ ¬c ∨ ¬a ∧ ¬b ∧ c ∨ ¬a ∧ b ∧ c ∨ a ∧ b ∧ c , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-02-15 15:22:45.737826] Question: Q2.1 Remove redundant negation(s) from: ¬f ∧ ¬a ∨ (g → x) → (¬¬e → ¬¬c), User Response:  ¬f ∧ ¬a ∨ (g → x) → (¬¬e → ¬¬c) , Feedback: Entered Statement is equivalent but there are redundant negations
+[2021-02-15 15:22:52.552663] Question: Q2.1 Remove redundant negation(s) from: ¬f ∧ ¬a ∨ (g → x) → (¬¬e → ¬¬c), User Response:  ¬f ∧ ¬a ∨ (g → x) → (e → c) , Feedback: Well done, your answer is correct :) Please click 'Next Question'

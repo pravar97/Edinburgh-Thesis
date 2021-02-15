@@ -1,11 +1,12 @@
 from flask import request
 from ast_class import *
-import hashlib
+from statementManipulations import rmB
 
-def isDis(tree):
+
+def isSubBinOp(op, tree):
     if isinstance(tree, BinOp):
-        if tree.op == '∨':  # Check if 'or' operator and keep recursing if it is
-            return isDis(tree.lhs) and isDis(tree.rhs)
+        if tree.op == op:  # Check if 'or' operator and keep recursing if it is
+            return isSubBinOp(op, tree.lhs) and isSubBinOp(op, tree.rhs)
         else:
             return False  # If it is an 'and' operator then this is not a disjunction
     if isinstance(tree, NegOP):
@@ -14,12 +15,18 @@ def isDis(tree):
     return type(tree) == str  # single atoms can be disjunctions
 
 
-def isCNF(tree):
+def is_in_form(f, tree):
+    if f == 'CNF':
+        op = '∧'
+        opp_op = '∨'
+    else:
+        op = '∨'
+        opp_op = '∧'
     if isinstance(tree, BinOp):
-        if tree.op == '∧':  # Check if we have an 'and' operator
-            return isCNF(tree.lhs) and isCNF(tree.rhs)  # Keep recursing while we see 'and's
+        if tree.op == op:  # Check if we have an 'and' operator
+            return is_in_form(f, tree.lhs) and is_in_form(f, tree.rhs)  # Keep recursing while we see 'and's
         else:
-            return isDis(tree)   # If tree is 'or', then check if its a disjunction
+            return isSubBinOp(opp_op, tree)   # If tree is 'or', then check if its a disjunction
     if isinstance(tree, NegOP):  # If a negation it should only negate a single atom in CNF
         return type(tree.stmt) == str
 
@@ -27,6 +34,10 @@ def isCNF(tree):
 
 
 def isEQ(a, b, hint=None):
+    desc2tree = {'Statement is a tautology': BinOp('a', '∨', NegOP('a')),
+                 'Statement is inconsistent': BinOp('a', '∧', NegOP('a'))}
+    a = desc2tree.get(a, a)
+    b = desc2tree.get(b, b)
     tt = ast(BinOp(a, '⊕', b)).printTruthTable()
     eq = 1 not in tt['Result']
     if hint is None:

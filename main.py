@@ -1,7 +1,5 @@
 from statementPreProcessing import *
-from statementManipulations import *
-from statementCheckers import *
-
+from generators import *
 import json
 from uuid import uuid4
 from flask import Flask, render_template, request
@@ -10,6 +8,7 @@ from werkzeug.utils import redirect
 from wtforms import StringField, SubmitField
 from flask_bootstrap import Bootstrap
 import pandas as pd
+import datetime
 
 app = Flask(__name__)
 Bootstrap(app)
@@ -28,6 +27,7 @@ def genNewUser(userID=None):
     userData[userID]['SQ#'] = 1
     if len(userData) >= capacity:
         userData.pop(next(iter(userData)))
+    appendLogs(str(len(userData)) + ' Unique Users')
     return userID
 
 
@@ -75,10 +75,15 @@ def updateStats(stats, difficulty, correctness):
         json.dump(stats, f)
 
 
+def appendLogs(input_line):
+    with open('logs.txt', 'a') as file:
+        file.write('[' + str(datetime.datetime.now()) + '] ' + str(input_line) + '\n')
+
+
 def getSubQ(astTree):
-    stmt = gen_stmt(astTree)
+    stmt = tree2str(astTree)
     noN = rmN(astTree)
-    if gen_stmt(noN) != stmt:
+    if tree2str(noN) != stmt:
         return 1, ['Remove redundant negation(s) from:', stmt], noN
     if '?' in stmt:
         return 2, ['Remove Ternary operator(s) from:', stmt], rmTO(astTree)
@@ -89,10 +94,14 @@ def getSubQ(astTree):
     if '→' in stmt:
         return 5, ['Remove → from:', stmt], rmSI(astTree)
     noB = rmB(astTree)
-    if gen_stmt(noB) != stmt:
+    if tree2str(noB) != stmt:
         return 6, ['Move ¬ inwards in all brackets:', stmt], noB
-    if not isCNF(astTree):
-        return 7, ['Convert the following to CNF:', stmt], convertToCNF(astTree, True)
+    if not is_in_form('CNF', astTree) and not is_in_form('DNF', astTree):
+        f = getUserData('f', random.choice(['CNF', 'DNF']))
+        setUserData('f', f)
+        return 7, ['Convert the following to ' + f + ':', stmt], \
+               convertTo(f, astTree, do_presteps=False, return_tree_and_steps=True)
+
     return 8, [], ''
 
 
@@ -104,20 +113,21 @@ class HomeForm(FlaskForm):
 
 class statementForm(FlaskForm):
     #  Set up buttons and text boxes
-    input = StringField(' ')
+    input = StringField(' ', render_kw={"placeholder": "For example: (a or b) and (c -> d)"})
     submit = SubmitField('Display Truth Table')
     genRan = SubmitField('Generate Random Statement')
     conCNF = SubmitField('Convert to CNF')
+    conDNF = SubmitField('Convert to DNF')
+    getKmap = SubmitField('Display Karnaugh Map')
     goHome = SubmitField('Return to Homepage')
 
 
 class QuestionsForm(FlaskForm):
     #  Set up buttons and text boxes
     input = StringField(' ')
-    nextq_hidden = StringField(' ')
     submit = SubmitField('Enter')
-    next = SubmitField('Next Question')
     see = SubmitField('See sample solution')
+    next = SubmitField('Next Question')
     change = SubmitField('Change Difficulty')
     goHome = SubmitField('Return to Homepage')
 
@@ -130,13 +140,6 @@ class QuestionsDifficultyForm(FlaskForm):
     h1 = SubmitField('Hard')
     h2 = SubmitField('Very Hard')
     goHome = SubmitField('Return to Homepage')
-
-
-class LessonsHomeForm(FlaskForm):
-    l1 = SubmitField('Lesson 1: Atoms')
-    submit = SubmitField('Return to Homepage')
-
-# class LessonForm(FlaskForm):
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -168,11 +171,12 @@ def statementAnalyser():
     if form.validate_on_submit():
 
         try:
+            appendLogs('Statement Analysed: ' + form.input.data)
             if form.goHome.data:  # Go back to home page if this button clicked
                 return rd("/", code=302)
             if form.genRan.data:  # If its the random statement gen button
                 astTree = genRanTree(0)  # Get a random tree
-                form.input.data = gen_stmt(astTree)  # Set the textbox to that random statement
+                form.input.data = tree2str(astTree)  # Set the textbox to that random statement
 
             tokens = tokenize(form.input.data)  # Make a list of tokens based on textbox input
             if len(tokens) == 0:
@@ -181,13 +185,16 @@ def statementAnalyser():
             tree = parser.parse()  # Make a tree from the tokens list
 
             if form.conCNF.data:  # If the convert to CNF button is clicked
-                steps = convertToCNF(tree)
+                steps = convertTo('CNF', tree)
+
+            if form.conDNF.data:  # If the convert to CNF button is clicked
+                steps = convertTo('DNF', tree)
 
             # Generate a truth table
             curAST = ast(tree)
             output = curAST.printTruthTable()
 
-            # Check whether statement is satisfiable, tautology or unsatisfiable
+            # Check whether statement is satisfiable, tautology or inconsistent
             if 1 in output['Result']:
                 if 0 in output['Result']:
                     desc = "Statement is satisfiable"
@@ -196,9 +203,18 @@ def statementAnalyser():
             else:
                 desc = "Statement is inconsistent"
 
-            # Check if print truth table button is clicked
-            if form.submit.data:
-                result = gen_stmt(tree)
+            if form.getKmap.data:
+                kmap, rowkeys, rowatoms, colatoms = curAST.printKMap()
+                pdTable = pd.DataFrame(kmap, index=rowkeys)
+                table = '<p style="font-size:20pt; font-width:900; position: absolute; margin-right: ' + str(
+                    50 + len(kmap) * 25) + 'px; right: ' \
+                                           '50vw; top: ' + str(52 + len(rowkeys) * 10.4) + 'px;">' + ''.join(
+                    rowatoms) + '</p> '
+                table += '<p style="font-size:20pt; font-width:900;">' + ''.join(colatoms) + '</p> '
+                table += pdTable.head(len(rowkeys)).to_html(col_space=50, classes='Table', index=len(rowkeys) > 1)
+                # Check if print truth table button is clicked
+            elif form.submit.data:
+                result = tree2str(tree)
                 output[result] = output.pop('Result')
                 pdTable = pd.DataFrame(output)  # Create a table data structure from truth table dictionary
 
@@ -243,7 +259,7 @@ def questionsDifficulty():
 def questions():
     # Set the form data to be blank except the question
     error = wrong = right = table = ""
-    steps = None
+    steps = steps_table = None
 
     cur_question = getUserData('cur_question')
     difficulty = getUserData('difficulty')
@@ -252,15 +268,21 @@ def questions():
     if None in [q_num, sq_num, difficulty, cur_question]:
         return rd('/choose_question_difficulty')
 
-    if type(cur_question) == tuple:
-        q = ['Form a statement that satisfies this truth table:']
+    if cur_question[-1] == 'tt':
+        q = ['Form a statement that satisfies this Truth Table:']
         table = cur_question[0]
         solution = cur_question[1]
-        cur_question = solution
+        stage = -1
+    elif cur_question[-1] == 'km':
+        q = ['Form a statement that satisfies this Karnaugh Map:']
+        table = cur_question[0]
+        solution = cur_question[1]
         stage = -1
     else:
-        stage, q, solution = getSubQ(cur_question)
-
+        stage, q, solution = getSubQ(cur_question[0])
+        if type(solution) == tuple:
+            steps_table = solution[0]
+            solution = solution[1]
     q[0] = 'Q' + str(q_num) + '.' + str(sq_num) + ' ' + q[0]
 
     form = QuestionsForm()
@@ -272,7 +294,25 @@ def questions():
             if form.change.data:
                 return rd('/choose_question_difficulty')  # Change the difficulty
             if form.see.data:  # See the CNF conversion solutions
-                steps = 'Solution: ' + gen_stmt(solution)
+                if steps_table is None:
+                    steps = 'Solution: ' + tree2str(solution)
+                else:
+                    steps = steps_table
+
+            if form.next.data:  # Go to next question if next question clicked
+                next_question = getUserData('next_question')
+                setUserData('next_question', None)
+                if next_question is not None:
+                    if not is_in_form('CNF', next_question[0]) and not is_in_form('DNF', next_question[0]):
+                        setUserData('SQ#', getUserData('SQ#', 0) + 1)
+                        setUserData('cur_question', next_question)
+                        return rd('/q')
+
+                setUserData('Q#', getUserData('Q#', 0) + 1)
+                setUserData('SQ#', 1)
+                setUserData('cur_question', genQuestion(difficulty))
+                setUserData('f', random.choice(['CNF', 'DNF']))
+                return rd('/q')
 
             if form.submit.data:  # If enter button is clicked
 
@@ -281,88 +321,51 @@ def questions():
                     raise Exception("Input Field is empty")
                 user_parser = Parser(tokens)
                 user_tree = user_parser.parse()  # Parse the user input
-
+                f = getUserData('f', '')
                 pos_wrongs = {
                     -1: 'Statement is not equivalent, for example when ',
-                    1: 'Entered Statement is equivalent but there are still redundant negations',
-                    2: 'Entered Statement is equivalent but there are still ternary operator(s)',
-                    3: 'Entered Statement is equivalent but there are still XOR operator(s)',
-                    4: 'Entered Statement is equivalent but there are still double implication(s)',
-                    5: 'Entered Statement is equivalent but there are still single implication(s)',
-                    6: 'Entered Statement is equivalent but there are still negated brackets',
-                    7: 'Entered Statement is equivalent but it is not in CNF',
+                    1: 'Entered Statement is equivalent but there are redundant negations',
+                    2: 'Entered Statement is equivalent but there are ternary operator(s)',
+                    3: 'Entered Statement is equivalent but there are XOR operator(s)',
+                    4: 'Entered Statement is equivalent but there are double implication(s)',
+                    5: 'Entered Statement is equivalent but there are single implication(s)',
+                    6: 'Entered Statement is equivalent but there are negated brackets',
+                    7: 'Entered Statement is equivalent but it is not in ' + f,
 
                 }
                 with open('stats.json') as f:
                     stats = json.load(f)
-                eq, trues, falses = isEQ(user_tree, cur_question, hint=True)
+                eq, trues, falses = isEQ(user_tree, solution, hint=True)
                 if eq:  # Check if user input is equivalent to question
-                    if getSubQ(user_tree)[0] != stage:
+                    user_stage = getSubQ(user_tree)[0]
+                    if user_stage != stage and stage != 7 or stage == 7 and user_stage == 8:
                         right = 'Well done, your answer is correct :) Please click \'Next Question\''
                         updateStats(stats, difficulty, 'right')
-                        setUserData('next_question', user_tree)
+                        setUserData('next_question', (user_tree, 'sm'))
                     else:
                         updateStats(stats, difficulty, 'wrong')
-                        wrong = pos_wrongs[stage]
+                        wrong = pos_wrongs[user_stage]
                 else:
                     updateStats(stats, difficulty, 'wrong')
                     wrong = pos_wrongs[-1]
                     if trues:
-                        wrong += ', '.join(trues) + ' are true'
+                        verb = ['are', 'is'][int(len(trues) == 1)]
+                        wrong += ', '.join(trues) + ' ' + verb + ' true'
                         if falses:
-                            wrong += ' and ' + ', '.join(falses) + ' are false'
+                            verb = ['are', 'is'][int(len(falses) == 1)]
+                            wrong += ' and ' + ', '.join(falses) + ' ' + verb + ' false'
                     else:
-                        wrong += ', '.join(falses) + ' are false'
+                        verb = ['are', 'is'][int(len(falses) == 1)]
+                        wrong += ', '.join(falses) + ' ' + verb + ' false'
 
-                return render_template('questions.html', form=form, q=q, wrong=wrong, table=table, right=right)
-            if form.next.data:  # Go to next question if next question clicked
-                next_question = getUserData('next_question')
-                setUserData('next_question', None)
-                if isCNF(next_question) or next_question is None:
-                    next_question = genQuestion(difficulty)
-                    setUserData('Q#', getUserData('Q#', 0)+1)
-                    setUserData('SQ#', 1)
-                else:
-                    setUserData('SQ#', getUserData('SQ#', 0) + 1)
-                setUserData('cur_question', next_question)
-                return rd('/q')
+                appendLogs('Question: ' + ' '.join(q) + ', User Response: ' + form.input.data + ', Feedback: ' + wrong + right)
+                return render_template('questions.html', form=form, q=q, wrong=wrong, table=table, right=right,
+                                       steps=steps)
 
         except Exception as inst:
             error = str(inst)
 
     return render_template('questions.html', form=form, q=q, error=error, table=table, steps=steps)
-
-
-@app.route('/lessonsHome', methods=['POST', 'GET'])
-def lessonsHome():
-    form = LessonsHomeForm()
-
-    if form.validate_on_submit():
-        lessons = [form.l1.data]
-        for i in range(1):
-            if lessons[i]:
-                setUserData('L#', i+1)
-                return rd("/l")
-
-        return rd("/", code=302)  # Go to home page
-
-    return render_template('lessonsHome.html', form=form)
-
-
-@app.route('/l', methods=['POST', 'GET'])
-def lesson():
-    lnum = getUserData('L#')
-    if lnum is None:
-        return rd('/lessonsHome')
-    title = 'Lesson ' + str(lnum)
-    form = LessonsHomeForm()
-    if form.validate_on_submit():
-        if form.learn.data:
-            return redirect("https://course.inf.ed.ac.uk/inf1a")
-        else:
-            return rd("/", code=302)  # Go to home page
-
-    return render_template('lesson.html', title=title, form=form)
 
 
 if __name__ == '__main__':

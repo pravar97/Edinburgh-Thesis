@@ -1,5 +1,6 @@
 from trees import BinOp, TriOp, NegOP
 
+
 class Parser:
 
     def __init__(self, tokens):
@@ -212,7 +213,17 @@ def tokenize(stream):
             c3 = 'a'
             c4 = 'a'
 
-        if c == '+' or c == '∨' or c == '|' or c == 'v':
+        if c == '\\' and c2 == '/' or c == '|' and c2 == '|':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:  # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append("∨")  # Add operator
+
+            token = ""  # Reset for next atom
+            i += 1  # Increment loop counter more to cover additional chars in this notation
+        elif c == '+' or c == '∨' or c == '|' or c.lower() == 'v':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
@@ -228,6 +239,17 @@ def tokenize(stream):
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("∨")  # Add operator
+
+            token = ""  # Reset for next atom
+            i += 1  # Increment loop counter more to cover additional chars in this notation
+
+        elif c == '/' and c2 == '\\' or c == '&' and c2 == '&':
+            if token not in tokens:
+                identcount += 1
+            if identcount > 13:  # Enforce bounds of number of atoms
+                raise Exception("Too many atoms!")
+            tokens.append(token)  # Add atom preceding current operator
+            tokens.append("∧")  # Add operator
 
             token = ""  # Reset for next atom
             i += 1  # Increment loop counter more to cover additional chars in this notation

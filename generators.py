@@ -1,41 +1,8 @@
 import pandas as pd
-
+from statementManipulations import *
 from statementCheckers import *
 from werkzeug.utils import redirect
 import random
-
-
-def gen_stmt(tree):
-    pres = {'→': 3, '↔': 4, '∧': 0, '∨': 2, '⊕': 1}  # Keep track of precedences
-    if isinstance(tree, NegOP):
-        if isinstance(tree.stmt, BinOp):
-            return "¬(" + gen_stmt(tree.stmt) + ")"  # We negate the entire statement
-        else:
-            return "¬" + gen_stmt(tree.stmt)  # This negation does not require brackets
-    if isinstance(tree, BinOp):
-        out = ""
-        if isinstance(tree.lhs, BinOp):
-            if pres[tree.lhs.op] > pres[tree.op] or pres[tree.lhs.op] > 2 and pres[tree.op] > 2:
-                out += "(" + gen_stmt(
-                    tree.lhs) + ")"  # Need brackets since the precedence of sub tree is higher than parent tree
-            else:
-                out += gen_stmt(tree.lhs)
-        else:
-            out += gen_stmt(tree.lhs)  # No brackets since it won't make a difference
-        out += " " + tree.op + " "
-        if isinstance(tree.rhs, BinOp):
-            if pres[tree.rhs.op] > pres[tree.op] or pres[tree.rhs.op] > 2 and pres[tree.op] > 2:
-                out += "(" + gen_stmt(tree.rhs) + ")"
-            else:
-                out += gen_stmt(tree.rhs)
-        else:
-            out += gen_stmt(tree.rhs)
-        return out
-    if isinstance(tree, TriOp):
-        return "(" + gen_stmt(tree.lhs) + " ? " + gen_stmt(tree.mid) + " : " + gen_stmt(tree.rhs) + ")"
-    else:
-        return str(tree)
-
 
 def genRanTree(s):
     if s > 19:  # Base case: return a single atom
@@ -73,21 +40,25 @@ def genRanTree(s):
 
 
 def genQuestion(difficulty):
-    if not random.randint(0,2):
+    choice = random.randint(0,2)
+    if not choice:
         return genTruthTable(difficulty)
-    while True:  # Keep making statements until appropriate
-        curTree = genRanTree(difficulty)  # Generate random statement with difficulty parameter
-        curAST = ast(curTree)
-        u_results = curAST.printTruthTable()['Result']  # Get the results column from the statement's truth table
-        # Only be okay this data if its satisfiable, not a tautology and is not already in CNF
-        if 1 in u_results and 0 in u_results and not isCNF(curTree):
-            return curTree
+    elif choice == 1:
+        return genKmap(difficulty)
+    curTree = genRanTree(difficulty)
+    while isEQ(curTree, BinOp('a', '∨', NegOP('a'))) \
+            or isEQ(curTree, BinOp('a', '∧', NegOP('a'))) \
+            or is_in_form('CNF', curTree)\
+            or is_in_form('DNF', curTree):
+        curTree = genRanTree(difficulty)
+    print(tree2str(curTree))
+    return curTree, 'sm'
 
 
 def genTruthTable(difficulty):
     numAtoms = {10: 2, 5: 2, 0: 3, -5: 4, -10: 4}[difficulty]
     output = {}
-    for k in 'abcdef'[:numAtoms]:
+    for k in 'abcde'[:numAtoms]:
         output[k] = []  # Make columns for truth table
 
     output['Result'] = []
@@ -98,7 +69,7 @@ def genTruthTable(difficulty):
     for i in possAssigns:  # Loop through each true/false combination
         j = 0
 
-        for k in 'abcdef'[:numAtoms]:  # Fill in the atoms column
+        for k in 'abcde'[:numAtoms]:  # Fill in the atoms column
             output[k].append(i[j])
             j += 1
 
@@ -128,4 +99,137 @@ def genTruthTable(difficulty):
     pdTable = pd.DataFrame(output)  # Create a table data structure from truth table dictionary
     table = pdTable.head(len(output['Result'])).to_html(col_space=50, classes='Table')  # Generate HTML
 
-    return table, solution
+    return table, solution, 'tt'
+
+
+def makeSeq(l):
+    if l == 2:
+        return ['0', '1']
+    subseq = makeSeq(l/2)
+    seq = ['0' + x for x in subseq]
+    subseq.reverse()
+    seq += ['1' + x for x in subseq]
+    return seq
+
+
+def genMinTerms(tree):
+    minTerms = set()
+    astTree = ast(tree, keys='abcd')
+    tt = astTree.printTruthTable()
+    keys = list(tt.keys())[:-1]
+
+    for i, r in enumerate(tt['Result']):
+        if r:
+            minTerm = ''
+            for k in keys:
+                minTerm += str(tt[k][i])
+            minTerms.add(minTerm)
+
+    return minTerms
+
+
+def genRanCon(atoms):
+
+    i = random.randint(0, 1)
+    if i:
+        a = NegOP(atoms[0])
+    else:
+        a = atoms[0]
+    if not len(atoms) - 1:
+        return a
+    return BinOp(a, '∧', genRanCon(atoms[1:]))
+
+
+def makeDNF(difficulty):
+
+    if not difficulty:
+        seps = random.randint(1, 3)
+        a = genRanCon('abcd'[:seps])
+        b = genRanCon('abcd'[seps:])
+        return BinOp(a, '∨', b)
+    else:
+
+        chars = random.sample('abcd', k=random.randint(1,4))
+        used = set(chars)
+        a = genRanCon(chars)
+        aminTerms = genMinTerms(a)
+        while True:
+            chars = random.sample('abcd', k=random.randint(1, 4))
+            b = genRanCon(chars)
+            bminTerms = genMinTerms(b)
+            if bminTerms ^ aminTerms:
+                used = used.union(chars)
+                break
+        while True:
+            chars = random.sample('abcd', k=random.randint(1, 4)) + [x for x in 'abcd' if x not in used]
+            c = genRanCon(chars)
+            cminTerms = genMinTerms(c)
+            if cminTerms ^ aminTerms and cminTerms ^ bminTerms:
+                break
+
+    return BinOp(a, '∨', BinOp(b, '∨', c))
+
+
+def kmap2tree(kmap, rows, cols, rowkeys):
+
+    dislist = []
+    for i, k in enumerate(kmap):
+        for j, v in enumerate(kmap[k]):
+            if v:
+                conlist = []
+                for code, atom in zip(rowkeys[j] + k, rows + cols):
+                    if int(code):
+                        conlist.append(atom)
+                    else:
+                        conlist.append(NegOP(atom))
+                dislist.append(conlist)
+
+    return list2DNF(dislist)
+
+
+def genKmap(difficulty):
+
+    if difficulty not in {0, -5}:
+        numAtoms = {10: 2, 5: 3, -10: 4}[difficulty]
+        atoms = 'abcd'[:numAtoms]
+        numrows = len(atoms) // 2
+        numcols = len(atoms) - numrows
+        colatoms = atoms[numrows:]
+        rowatoms = atoms[:numrows]
+
+        kmap = {}
+        rowkeys = ['0']
+        if numrows > 0:
+            rowkeys = makeSeq(2 ** numrows)
+        colkeys = makeSeq(2 ** numcols)
+        inconsistent = tautology = True
+        for c in colkeys:
+            kmap[c] = []
+            for r in rowkeys:
+                v = random.randint(0, 1)
+                kmap[c].append(v)
+                if v:
+                    inconsistent = False
+                else:
+                    tautology = False
+
+        if inconsistent:
+            kmap[random.choice(colkeys)][random.randint(0, len(rowkeys)-1)] = 1
+        elif tautology:
+            kmap[random.choice(colkeys)][random.randint(0, len(rowkeys)-1)] = 0
+        tree = kmap2tree(kmap, rowatoms, colatoms, rowkeys)
+    else:
+        tree = makeDNF(difficulty)
+        astTree = ast(tree)
+        kmap, rowkeys, rowatoms, colatoms = astTree.printKMap()
+
+
+
+    pdTable = pd.DataFrame(kmap, index=rowkeys)
+    table = '<p style="font-size:20pt; font-width:900; position: absolute; margin-right: ' + str(
+        50 + len(kmap) * 25) + 'px; right: ' \
+                               '50vw; top: ' + str(160 + len(rowkeys) * 10.4) + 'px;">' + ''.join(rowatoms) + '</p> '
+    table += '<p style="font-size:20pt; font-width:900;">' + ''.join(colatoms) + '</p> '
+    table += pdTable.head(len(rowkeys)).to_html(col_space=50, classes='Table', index=len(rowkeys) > 1)
+    return table, simDNF(tree), 'km'
+
