@@ -1,5 +1,32 @@
 [2021-02-15 15:19:13.832688] 1 Unique Users
 [2021-02-15 15:22:04.381646] 1 Unique Users
 [2021-02-15 15:22:32.662707] Question: Q1.1 Form a statement that satisfies this Truth Table:, User Response: ¬a ∧ ¬b ∧ ¬c ∨ ¬a ∧ ¬b ∧ c ∨ ¬a ∧ b ∧ c ∨ a ∧ b ∧ c , Feedback: Well done, your answer is correct :) Please click 'Next Question'
-[2021-02-15 15:22:45.737826] Question: Q2.1 Remove redundant negation(s) from: ¬f ∧ ¬a ∨ (g → x) → (¬¬e → ¬¬c), User Response:  ¬f ∧ ¬a ∨ (g → x) → (¬¬e → ¬¬c) , Feedback: Entered Statement is equivalent but there are redundant negations
+[2021-02-15 15:22:45.737826] Question: Q2.1 Remove redundant negation(s) from: ¬f ∧ ¬a ∨ (g → x) → (¬¬e → ¬¬c), User Response:  ¬f ∧ ¬a ∨ (g → x) → (¬¬e → ¬¬c) , Feedback: Entered Expression is equivalent but there are redundant negations
 [2021-02-15 15:22:52.552663] Question: Q2.1 Remove redundant negation(s) from: ¬f ∧ ¬a ∨ (g → x) → (¬¬e → ¬¬c), User Response:  ¬f ∧ ¬a ∨ (g → x) → (e → c) , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-02-17 15:47:13.405486] 1 Unique Users
+[2021-02-17 16:09:30.961224] 2 Unique Users
+[2021-02-18 12:48:37.076483] 1 Unique Users
+[2021-02-18 12:48:40.909552] Expression Analysed: a or b
+[2021-02-18 12:48:46.231926] Expression Analysed: a
+[2021-02-18 12:48:50.624217] Expression Analysed: a or b
+[2021-02-18 12:49:23.050352] Expression Analysed: a or b
+[2021-02-18 12:50:00.663536] Expression Analysed: a or b
+[2021-02-18 12:50:22.619351] Expression Analysed: a or b
+[2021-02-18 12:50:23.949897] Expression Analysed: a or b
+[2021-02-18 12:50:26.497297] Expression Analysed: a or b
+[2021-02-18 12:50:29.177448] Expression Analysed: a or b
+[2021-02-18 12:50:33.379994] Expression Analysed: ¬(y ∨ b ∨ ¬¬y) → ¬((b ∨ c) ∧ ¬¬x)
+[2021-02-18 12:50:35.794725] Expression Analysed: ¬(y ∨ b ∨ ¬¬y) → ¬((b ∨ c) ∧ ¬¬x)
+[2021-02-18 12:54:16.838057] Expression Analysed: ¬(y ∨ b ∨ ¬¬y) → ¬((b ∨ c) ∧ ¬¬x)
+[2021-02-18 12:57:01.613223] Expression Analysed: ¬(y ∨ b ∨ ¬¬y) → ¬((b ∨ c) ∧ ¬¬x)
+[2021-02-18 12:57:03.338674] Expression Analysed: ¬(y ∨ b ∨ ¬¬y) → ¬((b ∨ c) ∧ ¬¬x)
+[2021-02-18 12:57:04.441205] Expression Analysed: ¬(¬(¬Z ∨ ¬X) → ¬¬(¬G ∧ ¬G))
+[2021-02-18 12:57:05.321349] Expression Analysed: (C ? Z : Y)
+[2021-02-18 12:57:06.573572] Expression Analysed: ¬(Y ∧ Y ∨ B ∨ A) → ¬(X ∧ X) ∧ (¬B ∨ ¬X)
+[2021-02-18 12:57:08.454398] Expression Analysed: ¬(Y ∧ Y ∨ B ∨ A) → ¬(X ∧ X) ∧ (¬B ∨ ¬X)
+[2021-02-18 12:57:10.117834] Expression Analysed: ¬(Y ∧ Y ∨ B ∨ A) → ¬(X ∧ X) ∧ (¬B ∨ ¬X)
+[2021-02-18 12:57:20.365556] Expression Analysed: ¬(Y ∧ Y ∨ B ∨ A) → ¬(X ∧ X) ∧ (¬B ∨ ¬X)
+[2021-02-18 12:57:21.904291] Expression Analysed: (E ∨ Z → ¬¬A) → (E ∨ X → G ∨ D)
+[2021-02-18 12:57:26.069165] 1 Unique Users
+[2021-02-18 12:57:54.980910] 1 Unique Users
+[2021-03-16 13:35:36.047607] 1 Unique Users

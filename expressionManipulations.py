@@ -5,7 +5,7 @@ def tree2str(tree):
     pres = {'→': 3, '↔': 4, '∧': 0, '∨': 2, '⊕': 1}  # Keep track of precedences
     if isinstance(tree, NegOP):
         if isinstance(tree.stmt, BinOp):
-            return "¬(" + tree2str(tree.stmt) + ")"  # We negate the entire statement
+            return "¬(" + tree2str(tree.stmt) + ")"  # We negate the entire expression
         else:
             return "¬" + tree2str(tree.stmt)  # This negation does not require brackets
     if isinstance(tree, BinOp):
@@ -124,7 +124,7 @@ def distribute(op, tree):
     else:
         opp_op = '∧'
         
-    if isinstance(tree, BinOp):  # Apply distributivity property to statements
+    if isinstance(tree, BinOp):  # Apply distributivity property to expressions
         if tree.op == opp_op:
             if isinstance(tree.lhs, BinOp):
                 if tree.lhs.op == op:
@@ -141,59 +141,13 @@ def distribute(op, tree):
     return tree
 
 
-def makeAtomsSet(tree):
-    atomset = set()
-    if isinstance(tree, BinOp):
-        # Recurse until we just have atoms/ negated atoms
-        atomset.update(makeAtomsSet(tree.lhs))
-        atomset.update(makeAtomsSet(tree.rhs))
-    else:
-        if isinstance(tree, NegOP):
-            tree = '¬' + tree.stmt
-        atomset.add(tree)   # Add this to atom set
-    return atomset
-
-
-def makeConSet(tree):
-    conset = set()
-    if isinstance(tree,BinOp):
-        if tree.op == '∧':
-            conset.update(makeConSet(tree.lhs))
-            conset.update(makeConSet(tree.rhs))
-            return conset
-    tset = makeAtomsSet(tree)
-
-    if not [x for x in tset if '¬' + x in tset]:
-
-        conset.add(frozenset(tset))
-
-    return conset
-
-
-def set2Dis(stmtset):
-    stmtlist = list(stmtset)
-    if stmtlist[0][0] == '¬':
-        stmtlist[0] = NegOP(stmtlist[0][1])
-    if len(stmtlist) == 1:
-        return stmtlist[0]
-    return BinOp(stmtlist[0], '∨', set2Dis(stmtlist[1:]))
-
-
-def set2Con(stmtset):
-    stmtlist = list(stmtset)
-    if not stmtlist:
-        return 'Statement is a tautology'
-    if len(stmtlist) == 1:
-        return set2Dis(stmtlist[0])
-    return BinOp(set2Dis(stmtlist[0]), '∧', set2Con(stmtlist[1:]))
-
-
 def list2con(cons):
 
     if len(cons) == 1:
         return cons[0]
     else:
         return BinOp(cons[0], '∧', list2con(cons[1:]))
+
 
 def list2DNF(dnf):
 
@@ -202,30 +156,17 @@ def list2DNF(dnf):
     else:
         return BinOp(list2con(dnf[0]), '∨', list2DNF(dnf[1:]))
 
-def simCNF2(tree):
-
-    conset = makeConSet(tree)
-    consetlist = list(conset)
-    consetlen = len(consetlist)
-    for i in range(consetlen):
-        for j in range(consetlen):
-            if j == i:
-                continue
-            if consetlist[i].issubset(consetlist[j]):
-                if consetlist[j] in conset:
-                    conset.remove(consetlist[j])
-
-    return set2Con(conset)
 
 def simCNF(tree):
 
     dnf = simDNF(NegOP(tree))
-    if dnf == 'Statement is a tautology':
-        return 'Statement is inconsistent'
-    elif dnf == 'Statement is inconsistent':
-        return 'Statement is a tautology'
+    if dnf == 'Expression is a tautology':
+        return 'Expression is inconsistent'
+    elif dnf == 'Expression is inconsistent':
+        return 'Expression is a tautology'
 
-    return rmN(rmB(NegOP(simDNF(NegOP(tree)))))
+    return rmN(rmB(NegOP(dnf)))
+
 
 def findMatch(alist, blist):
 
@@ -241,6 +182,7 @@ def findMatch(alist, blist):
             already_matched = True
             out += '_'
     return out
+
 
 def termsEqual(alist, blist):
 
@@ -292,9 +234,9 @@ def simDNF(tree):
             tautology = False
 
     if tautology:
-        return 'Statement is a tautology'
+        return 'Expression is a tautology'
     elif inconsistent:
-        return 'Statement is inconsistent'
+        return 'Expression is inconsistent'
 
     minTerms.sort(key=lambda x: x.count('1'))
     groups = []
@@ -355,48 +297,48 @@ def convertTo(form, astTree, do_presteps=True, return_tree=False, return_tree_an
         opp_op = '∧'
         op = '∨'
 
-    steps = {'Step': [''], 'Statement': [tree2str(astTree)]}
+    steps = {'Step': [''], 'Expression': [tree2str(astTree)]}
     if do_presteps:
         noN = rmN(astTree)
         if tree2str(noN) != tree2str(astTree):
             steps['Step'].append(' Remove redundant negation(s) ')
-            steps['Statement'].append(tree2str(noN))
+            steps['Expression'].append(tree2str(noN))
         noTo = rmTO(noN)
         if tree2str(noN) != tree2str(noTo):
             steps['Step'].append('Remove Ternary operator(s) ')
-            steps['Statement'].append(tree2str(noTo))
+            steps['Expression'].append(tree2str(noTo))
         noNnoTo = rmN(noTo)
         if tree2str(noNnoTo) != tree2str(noTo):
             steps['Step'].append(' Remove redundant negation(s) ')
-            steps['Statement'].append(tree2str(noNnoTo))
+            steps['Expression'].append(tree2str(noNnoTo))
         noXOR = rmXOR(noNnoTo)
         if tree2str(noNnoTo) != tree2str(noXOR):
             steps['Step'].append(' Eliminate ⊕')
-            steps['Statement'].append(tree2str(noXOR))
+            steps['Expression'].append(tree2str(noXOR))
         noNnoXOR = rmN(noXOR)
         if tree2str(noNnoXOR) != tree2str(noXOR):
             steps['Step'].append(' Remove redundant negation(s) ')
-            steps['Statement'].append(tree2str(noNnoXOR))
+            steps['Expression'].append(tree2str(noNnoXOR))
         noDi = rmDI(noNnoXOR)
         if tree2str(noNnoXOR) != tree2str(noDi):
             steps['Step'].append(' Eliminate ↔ ')
-            steps['Statement'].append(tree2str(noDi))
+            steps['Expression'].append(tree2str(noDi))
         noSi = rmSI(noDi)
         if tree2str(noSi) != tree2str(noDi):
             steps['Step'].append(' Eliminate →')
-            steps['Statement'].append(tree2str(noSi))
+            steps['Expression'].append(tree2str(noSi))
         noNnoSi = rmN(noSi)
         if tree2str(noNnoSi) != tree2str(noSi):
             steps['Step'].append(' Remove redundant negation(s) ')
-            steps['Statement'].append(tree2str(noNnoSi))
+            steps['Expression'].append(tree2str(noNnoSi))
         noB = rmB(noNnoSi)
         if tree2str(noB) != tree2str(noNnoSi):
             steps['Step'].append('Move ¬ inwards')
-            steps['Statement'].append(tree2str(noB))
+            steps['Expression'].append(tree2str(noB))
         noNnoB = rmN(noB)
         if tree2str(noNnoB) != tree2str(noB):
             steps['Step'].append(' Remove redundant negation(s) ')
-            steps['Statement'].append(tree2str(noNnoB))
+            steps['Expression'].append(tree2str(noNnoB))
 
         init = noNnoB
     else:
@@ -404,10 +346,10 @@ def convertTo(form, astTree, do_presteps=True, return_tree=False, return_tree_an
 
     result = distribute(op, init)
 
-    while tree2str(result) != tree2str(init):  # Keep looping to make sure the statement is really in CNF
+    while tree2str(result) != tree2str(init):  # Keep looping to make sure the expression is really in CNF
 
         steps['Step'].append('Distribute ' + opp_op + ' over ' + op)
-        steps['Statement'].append(tree2str(result))
+        steps['Expression'].append(tree2str(result))
         init = result
         result = distribute(op, init)  # Create a tree that is in CNF
 
@@ -420,7 +362,7 @@ def convertTo(form, astTree, do_presteps=True, return_tree=False, return_tree_an
         return result_sim
     if tree2str(result) != tree2str(result_sim):
         steps['Step'].append('Simplify ' + form)
-        steps['Statement'].append(tree2str(result_sim))
+        steps['Expression'].append(tree2str(result_sim))
     pdTable = pd.DataFrame(steps)  # Create a table data structure from truth table dictionary
     out = [pdTable.head(len(steps['Step'])).to_html(col_space=50, classes='Table', index=False, justify='center'), result_sim]
     if return_tree_and_steps:

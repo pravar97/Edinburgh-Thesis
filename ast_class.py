@@ -88,7 +88,7 @@ class ast:
                 output[k].append(i[j])
                 j += 1
 
-            output['Result'].append(int(self.isTrue(tree)))  # Calculate statement evaluation and fill in the results
+            output['Result'].append(int(self.isTrue(tree)))  # Calculate expression evaluation and fill in the results
             # column
 
         return output

@@ -25,7 +25,7 @@ class Parser:
     def parse(self):
         output = self.parseStmt()  # Get root node of tree, using LL recursive parsing
         if self.i < len(self.tokens):
-            raise Exception("Additional tokens at end of statement are invalid")
+            raise Exception("Additional tokens at end of expression are invalid")
         return output
 
     def parseStmt(self):
@@ -173,7 +173,7 @@ class Parser:
     def parseIdent(self):
         token = self.getToken()
         if self.end:
-            raise Exception("Unexpected end of statement")
+            raise Exception("Unexpected end of expression")
         if token not in ['(', ')', '¬', '∧', '∨', '→', '↔', '?', ':', '⊕']:
             if token == 'Result':
                 token = 'result'
@@ -187,7 +187,7 @@ def tokenize(stream):
     token = ""
     tokens = []
     identcount = 0
-
+    stream = stream.upper()
     i = 0
     while i < len(stream):  # Loop through all characters
 
@@ -223,7 +223,7 @@ def tokenize(stream):
 
             token = ""  # Reset for next atom
             i += 1  # Increment loop counter more to cover additional chars in this notation
-        elif c == '+' or c == '∨' or c == '|' or c.lower() == 'v':
+        elif c == '+' or c == '∨' or c == '|' or c == 'V':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
@@ -232,7 +232,7 @@ def tokenize(stream):
             tokens.append("∨")  # Add operator
 
             token = ""  # Reset for next atom
-        elif c.lower() == 'o' and not (' ' + token)[-1].isalpha() and c2.lower() == 'r' and not c3.isalpha():
+        elif c == 'O' and not (' ' + token)[-1].isalpha() and c2 == 'R' and not c3.isalpha():
             if token not in tokens:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
@@ -264,7 +264,7 @@ def tokenize(stream):
 
             token = ""  # Reset for next atom
 
-        elif c.lower() == 'a' and not (' ' + token)[-1].isalpha() and c2.lower() == 'n' and c3.lower() == 'd' and not c4.isalpha():
+        elif c == 'A' and not (' ' + token)[-1].isalpha() and c2 == 'N' and c3 == 'D' and not c4.isalpha():
             if token not in tokens:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
@@ -284,7 +284,7 @@ def tokenize(stream):
 
             token = ""  # Reset for next atom
 
-        elif c.lower() == 'x' and not (' ' + token)[-1].isalpha() and c2.lower() == 'o' and c3.lower() == 'r' and not c4.isalpha():
+        elif c == 'X' and not (' ' + token)[-1].isalpha() and c2 == 'O' and c3 == 'R' and not c4.isalpha():
             if token not in tokens:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
@@ -381,8 +381,8 @@ def tokenize(stream):
             tokens.append("¬")  # Add operator
 
             token = ""  # Reset for next atom
-        elif c.lower() == 'n' and not (' ' + token)[
-            -1].isalpha() and c2.lower() == 'o' and c3.lower() == 't' and not c4.isalpha():
+        elif c == 'N' and not (' ' + token)[
+            -1].isalpha() and c2 == 'O' and c3 == 'T' and not c4.isalpha():
             if token not in tokens:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms

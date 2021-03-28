@@ -1,6 +1,4 @@
-from flask import request
 from ast_class import *
-from statementManipulations import rmB
 
 
 def isSubBinOp(op, tree):
@@ -10,7 +8,7 @@ def isSubBinOp(op, tree):
         else:
             return False  # If it is an 'and' operator then this is not a disjunction
     if isinstance(tree, NegOP):
-        return type(tree.stmt) == str  # Check if statement is a negation with only an atom as subtree
+        return type(tree.stmt) == str  # Check if expression is a negation with only an atom as subtree
 
     return type(tree) == str  # single atoms can be disjunctions
 
@@ -34,8 +32,8 @@ def is_in_form(f, tree):
 
 
 def isEQ(a, b, hint=None):
-    desc2tree = {'Statement is a tautology': BinOp('a', '∨', NegOP('a')),
-                 'Statement is inconsistent': BinOp('a', '∧', NegOP('a'))}
+    desc2tree = {'Expression is a tautology': BinOp('a', '∨', NegOP('a')),
+                 'Expression is inconsistent': BinOp('a', '∧', NegOP('a'))}
     a = desc2tree.get(a, a)
     b = desc2tree.get(b, b)
     tt = ast(BinOp(a, '⊕', b)).printTruthTable()

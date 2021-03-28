@@ -1,14 +1,13 @@
-import pandas as pd
-from statementManipulations import *
-from statementCheckers import *
-from werkzeug.utils import redirect
+from expressionManipulations import *
+from expressionCheckers import *
 import random
+
 
 def genRanTree(s):
     if s > 19:  # Base case: return a single atom
-        return 'xyzabcdefg'[random.randint(0, 9)]  # Randomly select an atom
+        return 'XYZABCDEFG'[random.randint(0, 9)]  # Randomly select an atom
     elif s > 14:
-        return NegOP('xyzabcdefg'[random.randint(0, 9)])
+        return NegOP('XYZABCDEFG'[random.randint(0, 9)])
     elif s > 13:
         ran = random.randint(0, 2)
     elif s > 6:
@@ -58,7 +57,7 @@ def genQuestion(difficulty):
 def genTruthTable(difficulty):
     numAtoms = {10: 2, 5: 2, 0: 3, -5: 4, -10: 4}[difficulty]
     output = {}
-    for k in 'abcde'[:numAtoms]:
+    for k in 'ABCD'[:numAtoms]:
         output[k] = []  # Make columns for truth table
 
     output['Result'] = []
@@ -69,7 +68,7 @@ def genTruthTable(difficulty):
     for i in possAssigns:  # Loop through each true/false combination
         j = 0
 
-        for k in 'abcde'[:numAtoms]:  # Fill in the atoms column
+        for k in 'ABCD'[:numAtoms]:  # Fill in the atoms column
             output[k].append(i[j])
             j += 1
 
@@ -114,7 +113,7 @@ def makeSeq(l):
 
 def genMinTerms(tree):
     minTerms = set()
-    astTree = ast(tree, keys='abcd')
+    astTree = ast(tree, keys='ABCD')
     tt = astTree.printTruthTable()
     keys = list(tt.keys())[:-1]
 
@@ -144,24 +143,24 @@ def makeDNF(difficulty):
 
     if not difficulty:
         seps = random.randint(1, 3)
-        a = genRanCon('abcd'[:seps])
-        b = genRanCon('abcd'[seps:])
+        a = genRanCon('ABCD'[:seps])
+        b = genRanCon('ABCD'[seps:])
         return BinOp(a, '∨', b)
     else:
 
-        chars = random.sample('abcd', k=random.randint(1,4))
+        chars = random.sample('ABCD', k=random.randint(1,4))
         used = set(chars)
         a = genRanCon(chars)
         aminTerms = genMinTerms(a)
         while True:
-            chars = random.sample('abcd', k=random.randint(1, 4))
+            chars = random.sample('ABCD', k=random.randint(1, 4))
             b = genRanCon(chars)
             bminTerms = genMinTerms(b)
             if bminTerms ^ aminTerms:
                 used = used.union(chars)
                 break
         while True:
-            chars = random.sample('abcd', k=random.randint(1, 4)) + [x for x in 'abcd' if x not in used]
+            chars = random.sample('ABCD', k=random.randint(1, 4)) + [x for x in 'ABCD' if x not in used]
             c = genRanCon(chars)
             cminTerms = genMinTerms(c)
             if cminTerms ^ aminTerms and cminTerms ^ bminTerms:
@@ -191,7 +190,7 @@ def genKmap(difficulty):
 
     if difficulty not in {0, -5}:
         numAtoms = {10: 2, 5: 3, -10: 4}[difficulty]
-        atoms = 'abcd'[:numAtoms]
+        atoms = 'ABCD'[:numAtoms]
         numrows = len(atoms) // 2
         numcols = len(atoms) - numrows
         colatoms = atoms[numrows:]
@@ -223,8 +222,6 @@ def genKmap(difficulty):
         astTree = ast(tree)
         kmap, rowkeys, rowatoms, colatoms = astTree.printKMap()
 
-
-
     pdTable = pd.DataFrame(kmap, index=rowkeys)
     table = '<p style="font-size:20pt; font-width:900; position: absolute; margin-right: ' + str(
         50 + len(kmap) * 25) + 'px; right: ' \
@@ -232,4 +229,3 @@ def genKmap(difficulty):
     table += '<p style="font-size:20pt; font-width:900;">' + ''.join(colatoms) + '</p> '
     table += pdTable.head(len(rowkeys)).to_html(col_space=50, classes='Table', index=len(rowkeys) > 1)
     return table, simDNF(tree), 'km'
-

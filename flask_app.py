@@ -1,4 +1,4 @@
-from statementPreProcessing import *
+from expressionPreProcessing import *
 from generators import *
 import json
 from uuid import uuid4
@@ -106,16 +106,16 @@ def getSubQ(astTree):
 
 
 class HomeForm(FlaskForm):
-    submit = SubmitField('Analyse Statements')
+    submit = SubmitField('Analyse Expressions')
     ques = SubmitField('Answer Questions')
     chp = SubmitField('Inf1a Course Page')
 
 
-class statementForm(FlaskForm):
+class expressionForm(FlaskForm):
     #  Set up buttons and text boxes
     input = StringField(' ', render_kw={"placeholder": "For example: (a or b) and (c -> d)"})
     submit = SubmitField('Display Truth Table')
-    genRan = SubmitField('Generate Random Statement')
+    genRan = SubmitField('Generate Random Expression')
     conCNF = SubmitField('Convert to CNF')
     conDNF = SubmitField('Convert to DNF')
     getKmap = SubmitField('Display Karnaugh Map')
@@ -154,14 +154,14 @@ def home():
         elif form.chp.data:
             return redirect('https://course.inf.ed.ac.uk/inf1a')
         else:
-            return rd('/statement_analyser')
+            return rd('/expression_analyser')
 
     return render_template('home.html', form=form)  # Return the home page but with the new data generated
 
 
-@app.route('/statement_analyser', methods=['POST', 'GET'])
-def statementAnalyser():
-    form = statementForm()  # Set up the form features for homepage
+@app.route('/expression_analyser', methods=['POST', 'GET'])
+def expressionAnalyser():
+    form = expressionForm()  # Set up the form features for homepage
 
     # Make every form output initially empty
     error = desc = ""
@@ -171,12 +171,12 @@ def statementAnalyser():
     if form.validate_on_submit():
 
         try:
-            appendLogs('Statement Analysed: ' + form.input.data)
+            appendLogs('Expression Analysed: ' + form.input.data)
             if form.goHome.data:  # Go back to home page if this button clicked
                 return rd("/", code=302)
-            if form.genRan.data:  # If its the random statement gen button
+            if form.genRan.data:  # If its the random expression gen button
                 astTree = genRanTree(0)  # Get a random tree
-                form.input.data = tree2str(astTree)  # Set the textbox to that random statement
+                form.input.data = tree2str(astTree)  # Set the textbox to that random expression
 
             tokens = tokenize(form.input.data)  # Make a list of tokens based on textbox input
             if len(tokens) == 0:
@@ -194,14 +194,14 @@ def statementAnalyser():
             curAST = ast(tree)
             output = curAST.printTruthTable()
 
-            # Check whether statement is satisfiable, tautology or inconsistent
+            # Check whether expression is satisfiable, tautology or inconsistent
             if 1 in output['Result']:
                 if 0 in output['Result']:
-                    desc = "Statement is satisfiable"
+                    desc = "Expression is satisfiable"
                 else:
-                    desc = "Statement is a tautology"
+                    desc = "Expression is a tautology"
             else:
-                desc = "Statement is inconsistent"
+                desc = "Expression is inconsistent"
 
             if form.getKmap.data:
                 kmap, rowkeys, rowatoms, colatoms = curAST.printKMap()
@@ -227,7 +227,7 @@ def statementAnalyser():
 
             table = None
 
-    return render_template('statementAnalyser.html', form=form, table=table, error=error, desc=desc,
+    return render_template('expressionAnalyser.html', form=form, table=table, error=error, desc=desc,
                            steps=steps)  # Return the home page but with the new data generated
 
 
@@ -269,12 +269,12 @@ def questions():
         return rd('/choose_question_difficulty')
 
     if cur_question[-1] == 'tt':
-        q = ['Form a statement that satisfies this Truth Table:']
+        q = ['Form a expression that satisfies this Truth Table:']
         table = cur_question[0]
         solution = cur_question[1]
         stage = -1
     elif cur_question[-1] == 'km':
-        q = ['Form a statement that satisfies this Karnaugh Map:']
+        q = ['Form a expression that satisfies this Karnaugh Map:']
         table = cur_question[0]
         solution = cur_question[1]
         stage = -1
@@ -323,14 +323,14 @@ def questions():
                 user_tree = user_parser.parse()  # Parse the user input
                 f = getUserData('f', '')
                 pos_wrongs = {
-                    -1: 'Statement is not equivalent, for example when ',
-                    1: 'Entered Statement is equivalent but there are redundant negations',
-                    2: 'Entered Statement is equivalent but there are ternary operator(s)',
-                    3: 'Entered Statement is equivalent but there are XOR operator(s)',
-                    4: 'Entered Statement is equivalent but there are double implication(s)',
-                    5: 'Entered Statement is equivalent but there are single implication(s)',
-                    6: 'Entered Statement is equivalent but there are negated brackets',
-                    7: 'Entered Statement is equivalent but it is not in ' + f,
+                    -1: 'Expression is not equivalent, for example when ',
+                    1: 'Entered Expression is equivalent but there are redundant negations',
+                    2: 'Entered Expression is equivalent but there are ternary operator(s)',
+                    3: 'Entered Expression is equivalent but there are XOR operator(s)',
+                    4: 'Entered Expression is equivalent but there are double implication(s)',
+                    5: 'Entered Expression is equivalent but there are single implication(s)',
+                    6: 'Entered Expression is equivalent but there are negated brackets',
+                    7: 'Entered Expression is equivalent but it is not in ' + f,
 
                 }
                 with open('stats.json') as f:
