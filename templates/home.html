@@ -19,17 +19,17 @@ cursor: pointer;
   <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Logic Analyser</a>
+      <a class="navbar-brand" onclick="window.location='/'+window.location.search;">Logic Analyser</a>
     </div>
     <ul class="nav navbar-nav">
         <li class="active">
           <a onclick="window.location='/'+window.location.search;" title="Home">Home</a>
         </li>
         <li>
-          <a onclick="window.location='/expression_analyser'+window.location.search;" title="Analyse Expressions">Analyse Expressions</a>
+          <a onclick="window.location='/r?r_link=expression_analyser'+window.location.search;" title="Analyse Expressions">Analyse Expressions</a>
         </li>
         <li>
-          <a onclick="window.location='/choose_question_difficulty'+window.location.search;" title="Answer Questions">Answer Questions</a>
+          <a onclick="window.location='/r?r_link=choose_question_difficulty'+window.location.search;" title="Answer Questions">Answer Questions</a>
         </li>
         <li>
           <a href="https://course.inf.ed.ac.uk/inf1a" title="Inf1a Course Page">Inf1a Course Page</a>

@@ -2,40 +2,75 @@ from expressionManipulations import *
 from expressionCheckers import *
 import random
 
-
-def genRanTree(s):
-    if s > 19:  # Base case: return a single atom
-        return 'XYZABCDEFG'[random.randint(0, 9)]  # Randomly select an atom
-    elif s > 14:
-        return NegOP('XYZABCDEFG'[random.randint(0, 9)])
-    elif s > 13:
-        ran = random.randint(0, 2)
-    elif s > 6:
-        ran = random.randint(0, 3)
-    elif s > 0:
-        ran = random.randint(0, 5)
-    else:
-        ran = random.randint(0, 6)
-
-    if ran == 6:
-        a = genRanTree(s + 20)
-        b = genRanTree(s + 20)
-        c = genRanTree(s + 20)
+def genRanTree(s=12):
+    if s <= 1:
+        return random.choice('PQRSABCDEF')  # Randomly select an atom
+    op_choices = [('NegOP', 1)]
+    if s >= 4:
+        op_choices += [('BinOp', 2, '∨'), ('BinOp', 2, '∧')]
+    if s >= 5:
+        op_choices.append(('BinOp', 3, '→'))
+    if s >= 11:
+        op_choices.append(('TriOp', 7))
+    if s >= 12:
+        op_choices += [('BinOp', 8, '↔'), ('BinOp', 8, '⊕')]
+    op = random.choice(op_choices)
+    s -= op[1]
+    if op[0] == 'NegOP':
+        return NegOP(genRanTree(s))
+    elif op[0] == 'TriOp':
+        k = random.randint(1, (s - 2)//2)
+        m = random.randint(1, s - 2 * k - 1)
+        a = genRanTree(k)
+        b = genRanTree(s - 2 * k - m)
+        c = genRanTree(m)
         return TriOp(a, b, c)
-    elif ran > 3:
-        a = genRanTree(s + 14)
-        b = genRanTree(s + 14)
-        return BinOp(a, ['↔', '⊕'][ran % 2], b)
-    elif ran == 3:
-        a = genRanTree(s + 7)
-        b = genRanTree(s + 7)
-        return BinOp(a, '→', b)
-    elif ran > 0:
-        a = genRanTree(s + 6)
-        b = genRanTree(s + 6)
-        return BinOp(a, ['∨', '∧'][ran % 2], b)
+    elif op[2] in '∨∧→':
+        k = random.randint(1, s - 1)
+        a = genRanTree(k)
+        b = genRanTree(s - k)
+        return BinOp(a, op[2], b)
     else:
-        return NegOP(genRanTree(s + 1))
+        k = random.randint(1, (s - 1)//2)
+        a = genRanTree(k)
+        b = genRanTree((s - k)//2)
+        return BinOp(a, op[2], b)
+
+
+
+# def genRanTree(s):
+#     if s > 19:  # Base case: return a single atom
+#         return 'PQRSABCDEF'[random.randint(0, 9)]  # Randomly select an atom
+#     elif s > 14:
+#         return NegOP('PQRSABCDEF'[random.randint(0, 9)])
+#     elif s > 13:
+#         ran = random.randint(0, 2)
+#     elif s > 6:
+#         ran = random.randint(0, 3)
+#     elif s > 0:
+#         ran = random.randint(0, 5)
+#     else:
+#         ran = random.randint(0, 6)
+#
+#     if ran == 6:
+#         a = genRanTree(s + 20)
+#         b = genRanTree(s + 20)
+#         c = genRanTree(s + 20)
+#         return TriOp(a, b, c)
+#     elif ran > 3:
+#         a = genRanTree(s + 14)
+#         b = genRanTree(s + 14)
+#         return BinOp(a, ['↔', '⊕'][ran % 2], b)
+#     elif ran == 3:
+#         a = genRanTree(s + 7)
+#         b = genRanTree(s + 7)
+#         return BinOp(a, '→', b)
+#     elif ran > 0:
+#         a = genRanTree(s + 6)
+#         b = genRanTree(s + 6)
+#         return BinOp(a, ['∨', '∧'][ran % 2], b)
+#     else:
+#         return NegOP(genRanTree(s + 1))
 
 
 def genQuestion(difficulty):
@@ -55,7 +90,7 @@ def genQuestion(difficulty):
 
 
 def genTruthTable(difficulty):
-    numAtoms = {10: 2, 5: 2, 0: 3, -5: 4, -10: 4}[difficulty]
+    numAtoms = {5: 2, 10: 2, 15: 3, 20: 4, 25: 4}[difficulty]
     output = {}
     for k in 'ABCD'[:numAtoms]:
         output[k] = []  # Make columns for truth table
@@ -188,8 +223,8 @@ def kmap2tree(kmap, rows, cols, rowkeys):
 
 def genKmap(difficulty):
 
-    if difficulty not in {0, -5}:
-        numAtoms = {10: 2, 5: 3, -10: 4}[difficulty]
+    if difficulty not in {15, 20}:
+        numAtoms = {5: 2, 10: 3, 25: 4}[difficulty]
         atoms = 'ABCD'[:numAtoms]
         numrows = len(atoms) // 2
         numcols = len(atoms) - numrows

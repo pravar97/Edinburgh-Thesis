@@ -69,7 +69,7 @@ def rd(link, code=None):
 
 
 def updateStats(stats, difficulty, correctness):
-    diffmap = {10: 'very easy', 5: 'easy', 0: 'medium', -5: 'hard', -10: 'very hard'}
+    diffmap = {5: 'very easy', 10: 'easy', 15: 'medium', 20: 'hard', 25: 'very hard'}
     stats[diffmap[difficulty]][correctness] += 1
     with open('stats.json', 'w') as f:
         json.dump(stats, f)
@@ -96,7 +96,7 @@ def getSubQ(astTree):
     noB = rmB(astTree)
     if tree2str(noB) != stmt:
         return 6, ['Move ¬ inwards in all brackets:', stmt], noB
-    if not is_in_form('CNF', astTree) and not is_in_form('DNF', astTree):
+    if not is_in_form(getUserData('f', 'CNF'), astTree) and not is_in_form(getUserData('f', 'DNF'), astTree):
         f = getUserData('f', random.choice(['CNF', 'DNF']))
         setUserData('f', f)
         return 7, ['Convert the following to ' + f + ':', stmt], \
@@ -175,7 +175,7 @@ def expressionAnalyser():
             if form.goHome.data:  # Go back to home page if this button clicked
                 return rd("/", code=302)
             if form.genRan.data:  # If its the random expression gen button
-                astTree = genRanTree(0)  # Get a random tree
+                astTree = genRanTree(15)  # Get a random tree
                 form.input.data = tree2str(astTree)  # Set the textbox to that random expression
 
             tokens = tokenize(form.input.data)  # Make a list of tokens based on textbox input
@@ -237,15 +237,15 @@ def questionsDifficulty():
     if form.validate_on_submit():  # If a button has been clicked
         if form.goHome.data:  # Go back to home page if this button clicked
             return rd("/", code=302)
-        difficulty = 0  # Default difficulty (for Medium difficulty)
+        difficulty = 15  # Default difficulty (for Medium difficulty)
         if form.e1.data:  # If very easy clicked
-            difficulty = 10
-        elif form.e2.data:  # If easy clicked
             difficulty = 5
+        elif form.e2.data:  # If easy clicked
+            difficulty = 10
         elif form.h1.data:  # If hard clicked
-            difficulty = -5
+            difficulty = 20
         elif form.h2.data:  # If very hard clicked
-            difficulty = -10
+            difficulty = 25
 
         setUserData('cur_question', genQuestion(difficulty))
         setUserData('Q#', getUserData('Q#', 0) + 1)
@@ -366,6 +366,14 @@ def questions():
             error = str(inst)
 
     return render_template('questions.html', form=form, q=q, error=error, table=table, steps=steps)
+
+@app.route('/r', methods=['POST', 'GET'])
+def r():
+    r_link = request.args.get("r_link", '')
+    if '?' in r_link:
+        return redirect('/' + r_link)
+    return rd('/' + r_link)
+
 
 
 if __name__ == '__main__':

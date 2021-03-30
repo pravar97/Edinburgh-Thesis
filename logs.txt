@@ -30,3 +30,378 @@
 [2021-02-18 12:57:26.069165] 1 Unique Users
 [2021-02-18 12:57:54.980910] 1 Unique Users
 [2021-03-16 13:35:36.047607] 1 Unique Users
+[2021-03-28 15:25:54.548785] 1 Unique Users
+[2021-03-28 15:26:45.662784] Expression Analysed: 
+[2021-03-28 15:26:49.411454] Expression Analysed: ¬¬E ↔ ¬¬E
+[2021-03-28 15:26:52.583993] Expression Analysed: ¬D ∨ ¬P ∨ ¬S ∧ ¬B ∨ ¬E ∧ ¬P ∨ ¬(P → Q)
+[2021-03-28 15:26:54.223604] Expression Analysed: (Q ? E : F)
+[2021-03-28 15:26:57.861794] Expression Analysed: ¬(D ∧ E ∨ Q ∧ R) → (S ∧ Q → A ∨ A)
+[2021-03-28 15:26:59.145157] Expression Analysed: ¬(¬D ⊕ ¬P)
+[2021-03-28 15:27:23.432268] Expression Analysed: P ∧ Q ⊕ (S ∨ R)
+[2021-03-28 17:17:07.992198] Expression Analysed: (F ? C : C)
+[2021-03-28 17:17:13.735714] Expression Analysed: (F ? C : d)
+[2021-03-28 17:17:16.898633] Expression Analysed: (F ? C : d)
+[2021-03-28 17:17:23.709049] Expression Analysed: (F ? C : d)
+[2021-03-28 17:17:49.458438] Expression Analysed: (F ? C : d)
+[2021-03-28 17:17:55.225612] Expression Analysed: (F ? C : d)
+[2021-03-28 17:19:05.401337] Expression Analysed: (F ? C : d)
+[2021-03-28 17:19:10.967243] Expression Analysed: (F ? C : d)
+[2021-03-28 17:19:19.408825] Expression Analysed: (F ? C : d)
+[2021-03-28 18:12:26.345801] Expression Analysed: a xor b
+[2021-03-28 18:14:12.187280] Expression Analysed: a <-> b
+[2021-03-28 18:14:36.513515] Expression Analysed: a ? b : c
+[2021-03-28 22:45:10.429664] Expression Analysed: a xor b
+[2021-03-28 22:45:30.724125] Expression Analysed: a <-> b
+[2021-03-28 22:48:41.164362] Expression Analysed: a <-> b
+[2021-03-28 22:48:42.216214] Expression Analysed: R
+[2021-03-28 22:48:43.047515] Expression Analysed: Q
+[2021-03-28 22:48:43.659862] Expression Analysed: F
+[2021-03-28 22:48:44.300804] Expression Analysed: Q
+[2021-03-28 22:48:44.864808] Expression Analysed: R
+[2021-03-28 22:48:45.497164] Expression Analysed: A
+[2021-03-28 22:48:46.096443] Expression Analysed: F
+[2021-03-28 22:48:46.854273] Expression Analysed: D
+[2021-03-28 22:48:47.753221] Expression Analysed: A
+[2021-03-28 22:50:39.380416] Expression Analysed: E
+[2021-03-28 22:50:41.277707] Expression Analysed: A ⊕ D
+[2021-03-28 22:50:42.710530] Expression Analysed: A ⊕ D
+[2021-03-28 22:50:43.569882] Expression Analysed: ¬R ∨ ¬B → ¬¬C
+[2021-03-28 22:50:44.172014] Expression Analysed: P ∧ ¬F → S ∧ F
+[2021-03-28 22:51:45.794733] Expression Analysed: P ∧ ¬F → S ∧ F
+[2021-03-28 22:51:46.911780] Expression Analysed: ¬E ∨ ¬¬B → ¬C
+[2021-03-28 22:51:47.626363] Expression Analysed: Q ↔ E
+[2021-03-28 22:51:48.290298] Expression Analysed: P ⊕ F
+[2021-03-28 22:51:48.925864] Expression Analysed: P ↔ C
+[2021-03-28 22:51:50.014439] Expression Analysed: ¬¬¬Q ∨ F ∨ ¬¬B
+[2021-03-28 22:51:51.298741] Expression Analysed: C ∧ ¬(A ∨ (E → Q))
+[2021-03-28 22:51:52.169619] Expression Analysed: D ⊕ A
+[2021-03-28 22:51:52.830118] Expression Analysed: C ↔ D
+[2021-03-28 22:51:53.960606] Expression Analysed: C ↔ R
+[2021-03-28 22:51:54.784129] Expression Analysed: ¬(¬C → ¬S) ∨ ¬S
+[2021-03-28 22:51:55.768149] Expression Analysed: A ∧ B → (Q → R)
+[2021-03-28 22:51:56.562056] Expression Analysed: A ↔ C
+[2021-03-28 22:51:57.457315] Expression Analysed: ¬¬B ∧ (¬¬P → F)
+[2021-03-28 22:51:58.406318] Expression Analysed: (P ∨ ¬E) ∧ (¬D ∨ F)
+[2021-03-28 22:51:59.184248] Expression Analysed: D ⊕ D
+[2021-03-28 22:52:00.142951] Expression Analysed: ¬¬E ∨ F → ¬¬D
+[2021-03-28 22:52:01.254165] Expression Analysed: C ∧ ¬(¬¬P → ¬S)
+[2021-03-28 22:52:03.403671] Expression Analysed: (F → D) ∨ ¬(C ∨ S)
+[2021-03-28 22:52:04.501272] Expression Analysed: (C ? ¬S : S)
+[2021-03-28 22:52:05.489417] Expression Analysed: ¬¬((D ∨ ¬B) ∧ ¬¬D)
+[2021-03-28 22:52:06.294978] Expression Analysed: (F ? A : ¬Q)
+[2021-03-28 22:52:07.115560] Expression Analysed: ¬C ∧ ¬A ∧ ¬¬¬A
+[2021-03-28 22:52:07.807627] Expression Analysed: D → ¬(A → ¬¬P)
+[2021-03-28 22:52:09.787664] Expression Analysed: S ↔ S
+[2021-03-28 22:52:11.490965] Expression Analysed: ¬¬(¬(¬F ∧ D) ∨ ¬C)
+[2021-03-28 22:52:12.496775] Expression Analysed: (¬¬¬Q ∨ P) ∧ ¬¬R
+[2021-03-28 22:52:13.193528] Expression Analysed: B ⊕ E
+[2021-03-28 22:52:14.032100] Expression Analysed: Q ∨ (¬S → Q ∨ D)
+[2021-03-28 22:52:14.810586] Expression Analysed: ¬S ∧ ¬(¬¬B ∧ ¬Q)
+[2021-03-28 22:52:15.550394] Expression Analysed: ¬C → ¬¬F ∨ ¬S
+[2021-03-28 22:52:16.225598] Expression Analysed: E ↔ S
+[2021-03-28 22:52:16.921200] Expression Analysed: E ⊕ A
+[2021-03-28 22:52:17.684697] Expression Analysed: D ↔ E
+[2021-03-28 22:52:18.666328] Expression Analysed: ¬S → (D → ¬¬B)
+[2021-03-28 22:52:19.466503] Expression Analysed: Q ∨ (¬S → D) ∨ F
+[2021-03-28 22:52:20.233595] Expression Analysed: F ↔ Q
+[2021-03-28 22:52:20.887222] Expression Analysed: ¬(E ? A : F)
+[2021-03-28 22:52:21.539435] Expression Analysed: (Q ? F : ¬C)
+[2021-03-28 22:52:22.189450] Expression Analysed: ¬¬(P ∧ (¬¬A → S))
+[2021-03-28 22:52:24.351335] Expression Analysed: ¬¬¬C → (R → A)
+[2021-03-28 22:52:25.033980] Expression Analysed: (A ? ¬C : C)
+[2021-03-28 22:52:25.873876] Expression Analysed: R ↔ D
+[2021-03-28 22:52:26.743367] Expression Analysed: ¬D ∧ R ∧ ¬¬¬¬S
+[2021-03-28 22:52:27.370780] Expression Analysed: A ⊕ S
+[2021-03-28 22:52:27.940076] Expression Analysed: (Q ? P : ¬E)
+[2021-03-28 22:52:33.230203] 1 Unique Users
+[2021-03-28 22:54:31.223836] Expression Analysed: 
+[2021-03-28 22:54:31.969842] Expression Analysed: ¬(¬C ⊕ ¬C)
+[2021-03-28 22:54:33.125529] Expression Analysed: ¬¬F ∧ ¬B ∧ ¬¬(R ∧ C)
+[2021-03-28 22:54:33.743052] Expression Analysed: (¬C ? ¬¬Q : Q)
+[2021-03-28 22:54:34.471784] Expression Analysed: ¬¬Q ⊕ ¬C
+[2021-03-28 22:54:35.149693] Expression Analysed: B ↔ ¬¬Q
+[2021-03-28 22:54:35.795584] Expression Analysed: ¬E ⊕ ¬F
+[2021-03-28 22:54:37.636997] Expression Analysed: A ∨ (R ? ¬S : S)
+[2021-03-28 22:54:38.813064] Expression Analysed: (¬¬A ? B : P)
+[2021-03-28 22:54:40.808054] Expression Analysed: ¬(S ∧ ¬F) ∧ ¬P ∧ ¬¬A
+[2021-03-28 22:54:42.074012] Expression Analysed: (S ? ¬A : C ∧ A)
+[2021-03-28 22:54:44.070869] Expression Analysed: (¬¬F ? C : P)
+[2021-03-28 22:54:45.640390] Expression Analysed: ¬¬F ↔ ¬B
+[2021-03-28 22:54:46.326204] Expression Analysed: ¬¬F ↔ ¬B
+[2021-03-28 22:54:47.102304] Expression Analysed: (¬S ? ¬¬A : A)
+[2021-03-28 22:54:49.731621] Expression Analysed: (¬S ? ¬¬A : A)
+[2021-03-28 22:54:50.513293] Expression Analysed: A → ¬¬R ∧ (P ∨ ¬¬F)
+[2021-03-28 22:54:51.517989] Expression Analysed: A → ¬¬R ∧ (P ∨ ¬¬F)
+[2021-03-28 22:54:52.279869] Expression Analysed: ¬(¬C ∧ ¬S) ∨ (¬F → P)
+[2021-03-28 22:54:53.073158] Expression Analysed: ¬(¬C ∧ ¬S) ∨ (¬F → P)
+[2021-03-28 22:54:53.591421] Expression Analysed: Q ∧ (R ↔ B)
+[2021-03-28 22:54:54.646492] Expression Analysed: Q ∧ (R ↔ B)
+[2021-03-28 22:54:55.187084] Expression Analysed: Q ⊕ ¬¬A
+[2021-03-28 22:55:13.056374] Expression Analysed: Q ⊕ ¬¬A
+[2021-03-28 22:55:13.836250] Expression Analysed: Q ⊕ ¬¬A
+[2021-03-28 22:55:14.422147] Expression Analysed: ¬(Q ∨ ¬(D ∧ ¬¬(¬D ∨ R)))
+[2021-03-28 22:55:19.766443] Expression Analysed: ¬(Q ∨ ¬(D ∧ ¬¬(¬D ∨ R)))
+[2021-03-28 22:55:20.328899] Expression Analysed: (¬¬Q ? Q : A)
+[2021-03-28 22:55:25.555401] Expression Analysed: (¬¬Q ? Q : A)
+[2021-03-28 22:55:26.395207] Expression Analysed: (¬¬F ? A : E)
+[2021-03-28 22:55:27.590996] Expression Analysed: (¬¬F ? A : E)
+[2021-03-28 22:55:29.361990] Expression Analysed: ¬D → (A → Q) ∧ ¬¬B
+[2021-03-28 22:55:30.979912] Expression Analysed: ¬D → (A → Q) ∧ ¬¬B
+[2021-03-28 22:55:31.742885] Expression Analysed: ¬S ↔ ¬Q
+[2021-03-28 22:55:33.485130] Expression Analysed: ¬S ↔ ¬Q
+[2021-03-28 22:55:34.565690] Expression Analysed: (E ↔ S) ∨ S
+[2021-03-28 22:55:35.729247] Expression Analysed: (E ↔ S) ∨ S
+[2021-03-28 22:55:36.546840] Expression Analysed: ¬¬B ↔ ¬F
+[2021-03-28 22:55:37.914605] Expression Analysed: ¬¬B ↔ ¬F
+[2021-03-28 22:55:39.314687] Expression Analysed: (¬D ? ¬¬P : C)
+[2021-03-28 22:55:40.563658] Expression Analysed: (¬D ? ¬¬P : C)
+[2021-03-28 22:55:41.485815] Expression Analysed: F ∧ P ∧ ¬¬D ∧ F ∧ R
+[2021-03-28 22:55:42.491993] Expression Analysed: F ∧ P ∧ ¬¬D ∧ F ∧ R
+[2021-03-28 22:55:43.284703] Expression Analysed: ¬(¬¬C ∧ ¬¬C → ¬¬E)
+[2021-03-28 22:55:44.457470] Expression Analysed: ¬(¬¬C ∧ ¬¬C → ¬¬E)
+[2021-03-28 22:55:45.240238] Expression Analysed: ¬¬¬P ∧ (¬P → D ∧ S)
+[2021-03-28 22:55:46.307773] Expression Analysed: ¬¬¬P ∧ (¬P → D ∧ S)
+[2021-03-28 22:55:46.997789] Expression Analysed: (¬¬A ? C : P)
+[2021-03-28 22:55:47.876929] Expression Analysed: (¬¬A ? C : P)
+[2021-03-28 22:55:48.517183] Expression Analysed: F ∨ ¬¬Q ∨ ¬(P ∧ ¬¬C)
+[2021-03-28 22:55:49.440526] Expression Analysed: F ∨ ¬¬Q ∨ ¬(P ∧ ¬¬C)
+[2021-03-28 22:55:50.149258] Expression Analysed: (B ? C : D) → R
+[2021-03-28 22:55:51.532380] Expression Analysed: (B ? C : D) → R
+[2021-03-28 22:55:52.892489] Expression Analysed: ¬¬¬A → (F → ¬¬¬P)
+[2021-03-28 22:55:54.012539] Expression Analysed: ¬¬¬A → (F → ¬¬¬P)
+[2021-03-28 22:55:54.674157] Expression Analysed: S ∧ S ∨ C ∨ ¬C ∨ ¬A
+[2021-03-28 22:56:02.447921] Expression Analysed: S ∧ S ∨ C ∨ ¬C ∨ ¬A
+[2021-03-28 22:56:04.194751] Expression Analysed: S ∧ S ∨ C ∨ ¬C ∨ ¬A
+[2021-03-28 22:56:05.339888] Expression Analysed: ¬C → C ∧ ¬¬¬B ∧ C
+[2021-03-28 22:56:12.003128] Expression Analysed: ¬C → C ∧ ¬¬¬B ∧ C
+[2021-03-28 22:56:13.225831] Expression Analysed: ¬(D ↔ ¬C)
+[2021-03-28 22:56:19.804719] Expression Analysed: ¬(D ↔ ¬C)
+[2021-03-28 22:56:20.910935] Expression Analysed: ¬E ↔ ¬S
+[2021-03-28 22:56:21.732907] Expression Analysed: ¬E ↔ ¬S
+[2021-03-28 22:56:22.718676] Expression Analysed: ¬D ⊕ ¬B
+[2021-03-28 22:56:23.528810] Expression Analysed: ¬D ⊕ ¬B
+[2021-03-28 22:56:24.316898] Expression Analysed: ¬¬Q ↔ ¬P
+[2021-03-28 22:56:26.235638] Expression Analysed: ¬¬Q ↔ ¬P
+[2021-03-28 22:56:27.030011] Expression Analysed: (¬Q ? R : ¬¬S)
+[2021-03-28 22:56:28.654280] Expression Analysed: (¬Q ? R : ¬¬S)
+[2021-03-28 22:56:29.331610] Expression Analysed: Q ⊕ ¬¬E
+[2021-03-28 22:56:30.233781] Expression Analysed: Q ⊕ ¬¬E
+[2021-03-28 22:56:30.923687] Expression Analysed: ¬Q ↔ ¬F
+[2021-03-28 22:56:31.833386] Expression Analysed: ¬Q ↔ ¬F
+[2021-03-28 22:56:32.466530] Expression Analysed: ¬(¬S ⊕ ¬R)
+[2021-03-28 22:56:33.371561] Expression Analysed: ¬(¬S ⊕ ¬R)
+[2021-03-28 22:56:34.113763] Expression Analysed: ¬B ↔ ¬D
+[2021-03-28 22:56:35.333314] Expression Analysed: ¬B ↔ ¬D
+[2021-03-28 22:56:36.427108] Expression Analysed: ¬S ∧ ¬¬(¬D → R) ∧ D
+[2021-03-28 22:56:37.375698] Expression Analysed: ¬S ∧ ¬¬(¬D → R) ∧ D
+[2021-03-28 22:56:38.011082] Expression Analysed: (E → Q) ∧ ¬¬R ∧ ¬¬D
+[2021-03-28 22:56:40.348610] Expression Analysed: (E → Q) ∧ ¬¬R ∧ ¬¬D
+[2021-03-28 22:56:40.881348] Expression Analysed: (S ? ¬S : E ∨ R)
+[2021-03-28 22:56:42.601995] Expression Analysed: (S ? ¬S : E ∨ R)
+[2021-03-28 22:56:43.228894] Expression Analysed: ¬(¬¬D → (¬¬B → ¬B))
+[2021-03-28 22:56:44.552878] Expression Analysed: ¬(¬¬D → (¬¬B → ¬B))
+[2021-03-28 22:56:45.233684] Expression Analysed: (D ? ¬¬E : ¬¬P)
+[2021-03-28 22:56:48.759783] Expression Analysed: (D ? ¬¬E : ¬¬P)
+[2021-03-28 22:56:49.415002] Expression Analysed: E ⊕ ¬¬P
+[2021-03-28 22:56:53.154225] Expression Analysed: E ⊕ ¬¬P
+[2021-03-28 22:56:53.883497] Expression Analysed: ¬¬Q → (¬S ∧ C → R)
+[2021-03-28 22:56:55.174649] Expression Analysed: ¬¬Q → (¬S ∧ C → R)
+[2021-03-28 22:56:55.806623] Expression Analysed: (¬¬Q ? F : C)
+[2021-03-28 22:56:59.356561] Expression Analysed: (¬¬Q ? F : C)
+[2021-03-28 22:57:00.064441] Expression Analysed: (E ? ¬F : Q ∧ E)
+[2021-03-28 22:57:02.563684] Expression Analysed: (E ? ¬F : Q ∧ E)
+[2021-03-28 22:57:03.233054] Expression Analysed: ¬(¬R → ¬D ∨ ¬P ∨ F)
+[2021-03-28 22:57:04.422608] Expression Analysed: ¬(¬R → ¬D ∨ ¬P ∨ F)
+[2021-03-28 22:57:05.016658] Expression Analysed: (¬P ? S : ¬¬Q)
+[2021-03-28 22:57:06.147990] Expression Analysed: (¬P ? S : ¬¬Q)
+[2021-03-28 22:57:07.579399] Expression Analysed: (¬S → B) ∨ (A → ¬¬F)
+[2021-03-28 22:57:08.240604] Expression Analysed: ¬¬F ∨ ¬(¬¬R ∨ R ∧ C)
+[2021-03-28 22:57:09.070767] Expression Analysed: (¬¬C ∧ S → ¬D) ∨ ¬S
+[2021-03-28 22:57:09.888641] Expression Analysed: ¬Q ∧ ¬S → ¬F ∧ ¬F
+[2021-03-28 22:57:10.942463] Expression Analysed: ¬¬P ∧ ¬¬(¬¬R → ¬E)
+[2021-03-28 22:57:11.772022] Expression Analysed: ¬(C ? ¬¬Q : ¬R)
+[2021-03-28 22:57:12.669334] Expression Analysed: ¬((B ∨ ¬(¬P ∨ ¬¬B)) ∧ B)
+[2021-03-28 22:57:13.518918] Expression Analysed: ¬¬A ∨ S ∨ F ∨ B ∧ P
+[2021-03-28 22:57:14.400206] Expression Analysed: ¬¬E ⊕ ¬F
+[2021-03-28 22:57:15.389296] Expression Analysed: (R → B) ∧ P ∧ S ∨ ¬F
+[2021-03-28 22:57:16.220980] Expression Analysed: ¬¬C ∨ (¬B → (D → P))
+[2021-03-28 22:57:16.931031] Expression Analysed: ¬(¬¬P ∧ ¬(C ∧ R ∧ ¬S))
+[2021-03-28 22:57:17.643091] Expression Analysed: ¬E ⊕ ¬B
+[2021-03-28 22:57:18.509637] Expression Analysed: (¬A ? R : ¬¬F)
+[2021-03-28 22:57:19.417159] Expression Analysed: E ∧ (¬(¬P → A) ∨ ¬¬C)
+[2021-03-28 22:57:20.277256] Expression Analysed: ¬(E ⊕ ¬R)
+[2021-03-28 22:57:21.017577] Expression Analysed: (¬B ? Q : ¬¬C)
+[2021-03-28 22:57:21.689457] Expression Analysed: ¬D ↔ ¬B
+[2021-03-28 22:57:22.364170] Expression Analysed: (¬¬C ? D : B)
+[2021-03-28 22:57:23.094207] Expression Analysed: ¬R ↔ ¬D
+[2021-03-28 22:57:23.883485] Expression Analysed: ¬¬P ⊕ ¬C
+[2021-03-28 22:57:25.146127] Expression Analysed: ¬(¬Q ∨ ¬¬B ∧ ¬B) ∨ E
+[2021-03-28 22:57:25.876892] Expression Analysed: ¬P ↔ ¬C
+[2021-03-28 22:57:26.630075] Expression Analysed: ¬Q ∨ ¬E ∨ ¬(¬D ∧ ¬C)
+[2021-03-28 22:57:27.299747] Expression Analysed: ¬¬R ↔ ¬S
+[2021-03-28 22:57:27.999198] Expression Analysed: (¬B → S) → (Q → ¬S)
+[2021-03-28 22:57:40.574791] Expression Analysed: ¬(B ∨ ¬¬C) ∧ ¬¬S ∧ D
+[2021-03-28 22:57:41.377836] Expression Analysed: (¬(D ∨ S) → F) ∨ R ∨ S
+[2021-03-28 22:57:42.135287] Expression Analysed: ¬(F ∧ ¬E) ∧ F ∧ (S ∨ S)
+[2021-03-28 22:57:43.025967] Expression Analysed: (Q ? S : ¬(P ∨ B))
+[2021-03-28 22:57:43.908243] Expression Analysed: (¬¬S ? P : S)
+[2021-03-28 22:57:45.038929] Expression Analysed: (D ∨ B) ∧ ¬A → F ∨ P
+[2021-03-28 22:58:03.137750] Expression Analysed: ¬(¬A ? D : ¬Q)
+[2021-03-28 22:58:04.173480] Expression Analysed: (S → F) ↔ ¬(R ∨ ¬S)
+[2021-03-28 22:58:05.113097] Expression Analysed: ((B → ¬D) ∨ R) ∧ (B ↔ ¬C)
+[2021-03-28 22:58:06.066158] Expression Analysed: ¬Q ∨ (¬Q → C ∧ A) → D ∨ E ∨ ¬¬Q
+[2021-03-28 22:58:07.022711] Expression Analysed: ¬(A → ¬S) ↔ ¬(C ∧ B)
+[2021-03-28 22:58:08.102803] Expression Analysed: ¬(¬(¬B ∨ ¬P ∨ (R → ¬¬R)) ∨ (B → ¬S))
+[2021-03-28 22:58:08.974753] Expression Analysed: ¬¬(¬(¬Q → S) ↔ B ∨ F)
+[2021-03-28 22:58:09.794382] Expression Analysed: ¬¬A ↔ P ∨ Q ∧ Q
+[2021-03-28 22:58:10.723500] Expression Analysed: (¬¬C ∨ E ? D ∨ P : ¬E)
+[2021-03-28 22:58:12.514400] Expression Analysed: ¬¬F ⊕ ¬Q → ¬(E ∨ ¬¬Q)
+[2021-03-28 22:58:14.229154] Expression Analysed: R → ¬(C ∨ F) ∧ (¬R → R) ∨ (D → ¬P)
+[2021-03-28 22:58:15.188158] Expression Analysed: A ∧ ¬(¬(C ∨ B) ∨ (¬B ∨ ¬P) ∧ B ∧ ¬¬B)
+[2021-03-28 22:58:16.606543] Expression Analysed: ¬(B ∧ E ⊕ (¬S → Q))
+[2021-03-28 22:58:17.739182] Expression Analysed: ¬(B ∧ E ⊕ (¬S → Q))
+[2021-03-28 22:58:18.668207] Expression Analysed: ¬((Q ∨ Q → ¬¬E ∧ ¬B) ∧ (¬Q → ¬¬P))
+[2021-03-28 22:58:19.600661] Expression Analysed: ¬((Q ∨ Q → ¬¬E ∧ ¬B) ∧ (¬Q → ¬¬P))
+[2021-03-28 22:58:20.478035] Expression Analysed: ¬(¬¬B ↔ B ∨ C) ∧ ¬¬P
+[2021-03-28 22:58:22.017111] Expression Analysed: ¬(¬¬B ↔ B ∨ C) ∧ ¬¬P
+[2021-03-28 22:58:23.563579] Expression Analysed: P ∨ E ↔ ¬(¬D ∧ D)
+[2021-03-28 22:58:24.120016] Expression Analysed: P ∨ E ↔ ¬(¬D ∧ D)
+[2021-03-28 22:58:25.058017] Expression Analysed: (C → ¬¬P ? P : ¬¬S)
+[2021-03-28 22:58:25.964506] Expression Analysed: (C → ¬¬P ? P : ¬¬S)
+[2021-03-28 22:58:27.213583] Expression Analysed: ¬(¬P → C ? S : P ∨ P)
+[2021-03-28 22:58:28.179997] Expression Analysed: ¬(¬P → C ? S : P ∨ P)
+[2021-03-28 22:58:29.230969] Expression Analysed: A → ¬P ⊕ (E → C)
+[2021-03-28 22:58:30.721914] Expression Analysed: A → ¬P ⊕ (E → C)
+[2021-03-28 22:58:32.315721] Expression Analysed: ¬(¬¬B ↔ ¬Q) ∨ (Q → ¬D)
+[2021-03-28 22:58:33.333333] Expression Analysed: ¬(¬¬B ↔ ¬Q) ∨ (Q → ¬D)
+[2021-03-28 22:58:34.085351] Expression Analysed: ¬(Q ∧ ¬D → ¬C) → B ∧ ¬S ∧ ¬¬¬D
+[2021-03-28 22:58:35.334345] Expression Analysed: ¬(Q ∧ ¬D → ¬C) → B ∧ ¬S ∧ ¬¬¬D
+[2021-03-28 22:58:36.325482] Expression Analysed: Q ∧ (¬(P ∧ (S ∨ D) ∨ ¬D) → P ∨ D ∨ F)
+[2021-03-28 22:58:37.561970] Expression Analysed: Q ∧ (¬(P ∧ (S ∨ D) ∨ ¬D) → P ∨ D ∨ F)
+[2021-03-28 22:58:38.708850] Expression Analysed: ¬¬Q → ¬¬¬S ∧ ¬¬P ∧ ¬¬(¬C ∧ ¬S)
+[2021-03-28 22:58:41.810391] Expression Analysed: ¬¬Q → ¬¬¬S ∧ ¬¬P ∧ ¬¬(¬C ∧ ¬S)
+[2021-03-28 22:58:42.603859] Expression Analysed: ¬R ∨ ¬¬D ↔ ¬E ∧ S
+[2021-03-28 22:58:43.603937] Expression Analysed: ¬R ∨ ¬¬D ↔ ¬E ∧ S
+[2021-03-28 22:58:44.388501] Expression Analysed: ¬¬Q ⊕ (¬S → ¬C)
+[2021-03-28 22:58:45.758216] Expression Analysed: ¬¬Q ⊕ (¬S → ¬C)
+[2021-03-28 22:58:48.256462] Expression Analysed: (¬(¬¬C → D) ? E : C)
+[2021-03-28 22:58:49.482141] Expression Analysed: (¬(¬¬C → D) ? E : C)
+[2021-03-28 22:58:50.416564] Expression Analysed: ¬(¬¬(¬¬D ∧ ¬¬B) ∨ (¬B → ¬F) ∨ ¬¬F)
+[2021-03-28 22:58:51.338504] Expression Analysed: ¬(¬¬(¬¬D ∧ ¬¬B) ∨ (¬B → ¬F) ∨ ¬¬F)
+[2021-03-28 22:58:52.267699] Expression Analysed: ¬¬C ↔ ¬¬P ∧ ¬B
+[2021-03-28 22:58:55.128775] Expression Analysed: ¬¬C ↔ ¬¬P ∧ ¬B
+[2021-03-28 22:58:56.718015] Expression Analysed: ¬(D ∧ (Q ⊕ ¬(S → A)))
+[2021-03-28 22:58:59.832652] Expression Analysed: ¬(D ∧ (Q ⊕ ¬(S → A)))
+[2021-03-28 22:59:00.860073] Expression Analysed: ¬¬S ⊕ ¬¬¬(P ∨ C)
+[2021-03-28 22:59:01.791784] Expression Analysed: ¬¬S ⊕ ¬¬¬(P ∨ C)
+[2021-03-28 22:59:02.797704] Expression Analysed: ¬(C ∧ R → ¬¬¬(¬A ∧ S)) ∧ (¬C ∨ ¬¬Q)
+[2021-03-28 22:59:04.077187] Expression Analysed: ¬(C ∧ R → ¬¬¬(¬A ∧ S)) ∧ (¬C ∨ ¬¬Q)
+[2021-03-28 22:59:05.434808] Expression Analysed: (¬D → ¬¬E) → R ⊕ ¬D
+[2021-03-28 22:59:08.645656] Expression Analysed: (¬D → ¬¬E) → R ⊕ ¬D
+[2021-03-28 22:59:10.466476] Expression Analysed: ¬D ∧ (¬R ∧ ¬F ? C : B)
+[2021-03-28 22:59:11.283091] Expression Analysed: ¬D ∧ (¬R ∧ ¬F ? C : B)
+[2021-03-28 22:59:12.264833] Expression Analysed: (D ⊕ (A ∨ C)) ∧ ¬¬E ∧ A
+[2021-03-28 22:59:13.082893] Expression Analysed: (D ⊕ (A ∨ C)) ∧ ¬¬E ∧ A
+[2021-03-28 22:59:14.352874] Expression Analysed: (F → ¬¬F) ↔ ¬R ∧ R
+[2021-03-28 22:59:15.292882] Expression Analysed: (F → ¬¬F) ↔ ¬R ∧ R
+[2021-03-28 22:59:16.665923] Expression Analysed: D ∨ A ↔ ¬¬(D ∨ B)
+[2021-03-28 22:59:18.050515] Expression Analysed: D ∨ A ↔ ¬¬(D ∨ B)
+[2021-03-28 22:59:18.723560] Expression Analysed: A ∧ ¬¬(¬Q → ¬¬F) → (Q → (E → S))
+[2021-03-28 22:59:19.637181] Expression Analysed: A ∧ ¬¬(¬Q → ¬¬F) → (Q → (E → S))
+[2021-03-28 22:59:20.249190] Expression Analysed: ¬(E ∨ ¬¬Q ? P ∧ R : B)
+[2021-03-28 22:59:21.239188] Expression Analysed: ¬(E ∨ ¬¬Q ? P ∧ R : B)
+[2021-03-28 22:59:22.204487] Expression Analysed: S ⊕ S ∧ R ∧ ¬F
+[2021-03-28 22:59:23.107571] Expression Analysed: S ⊕ S ∧ R ∧ ¬F
+[2021-03-28 22:59:24.000941] Expression Analysed: (S ⊕ ¬D → E) ∨ ¬C ∨ P
+[2021-03-28 22:59:24.800157] Expression Analysed: (S ⊕ ¬D → E) ∨ ¬C ∨ P
+[2021-03-28 22:59:25.614058] Expression Analysed: ¬A ⊕ ¬¬¬C ∧ A
+[2021-03-28 22:59:26.580049] Expression Analysed: ¬A ⊕ ¬¬¬C ∧ A
+[2021-03-28 22:59:27.529673] Expression Analysed: (¬Q ∨ B) ⊕ (¬C ∨ ¬E)
+[2021-03-28 22:59:28.620195] Expression Analysed: (¬Q ∨ B) ⊕ (¬C ∨ ¬E)
+[2021-03-28 22:59:29.281886] Expression Analysed: (R → A ∧ P) ↔ Q ∧ A
+[2021-03-28 22:59:30.191576] Expression Analysed: (R → A ∧ P) ↔ Q ∧ A
+[2021-03-28 22:59:30.915930] Expression Analysed: (¬¬D ? ¬¬A : ¬(E ∨ ¬R) ∨ B)
+[2021-03-28 22:59:32.065665] Expression Analysed: (¬¬D ? ¬¬A : ¬(E ∨ ¬R) ∨ B)
+[2021-03-28 22:59:32.632941] Expression Analysed: ¬Q ⊕ D ∧ C ∧ B
+[2021-03-28 22:59:33.485404] Expression Analysed: ¬Q ⊕ D ∧ C ∧ B
+[2021-03-28 22:59:34.409430] Expression Analysed: ¬¬¬S ↔ ¬¬C ∨ F
+[2021-03-28 22:59:35.128711] Expression Analysed: ¬¬¬S ↔ ¬¬C ∨ F
+[2021-03-28 22:59:35.901686] Expression Analysed: ¬¬S ⊕ ¬¬(Q → S)
+[2021-03-28 22:59:36.732559] Expression Analysed: ¬¬S ⊕ ¬¬(Q → S)
+[2021-03-28 22:59:37.440519] Expression Analysed: ¬E ∨ R ∨ ¬F → (¬R ? Q : S)
+[2021-03-28 22:59:39.884938] Expression Analysed: ¬E ∨ R ∨ ¬F → (¬R ? Q : S)
+[2021-03-28 22:59:40.671957] Expression Analysed: ¬P ↔ (S → ¬¬C)
+[2021-03-28 22:59:58.993317] Expression Analysed: ¬P ↔ (S → ¬¬C)
+[2021-03-28 22:59:59.831019] Expression Analysed: ¬E ∧ B
+[2021-03-28 23:00:00.572618] Expression Analysed: F → P
+[2021-03-28 23:00:01.336753] Expression Analysed: ¬C ∧ B
+[2021-03-28 23:00:02.093222] Expression Analysed: E ∨ ¬Q
+[2021-03-28 23:00:02.822584] Expression Analysed: ¬A ∨ A
+[2021-03-28 23:00:03.595049] Expression Analysed: P → D
+[2021-03-28 23:00:04.304027] Expression Analysed: E ∧ ¬B
+[2021-03-28 23:00:05.002873] Expression Analysed: ¬(R ∧ P)
+[2021-03-28 23:00:05.677632] Expression Analysed: ¬D ∧ C
+[2021-03-28 23:00:06.709667] Expression Analysed: R → A
+[2021-03-28 23:00:08.208591] Expression Analysed: ¬¬¬¬F
+[2021-03-28 23:00:09.222480] Expression Analysed: D → B
+[2021-03-28 23:00:10.033655] Expression Analysed: ¬(A ∨ P)
+[2021-03-28 23:00:10.763243] Expression Analysed: C → E
+[2021-03-28 23:00:11.671737] Expression Analysed: ¬D ∨ P
+[2021-03-28 23:00:12.473634] Expression Analysed: Q → R
+[2021-03-28 23:00:13.298400] Expression Analysed: ¬(D ∨ S)
+[2021-03-28 23:00:14.005863] Expression Analysed: R → A
+[2021-03-28 23:00:14.741837] Expression Analysed: B ∧ ¬Q
+[2021-03-28 23:00:15.443803] Expression Analysed: Q → C
+[2021-03-28 23:00:16.246172] Expression Analysed: ¬E ∧ Q
+[2021-03-28 23:00:17.224884] Expression Analysed: ¬¬¬¬P
+[2021-03-28 23:00:18.099048] Expression Analysed: C → S
+[2021-03-28 23:00:18.859570] Expression Analysed: R → E
+[2021-03-28 23:00:20.165826] Expression Analysed: ¬D ∨ D
+[2021-03-28 23:00:20.936542] Expression Analysed: A → A
+[2021-03-28 23:00:21.626024] Expression Analysed: ¬(C ∨ C)
+[2021-03-28 23:00:22.277155] Expression Analysed: A ∨ ¬C
+[2021-03-28 23:00:23.996605] Expression Analysed: ¬R ∧ D
+[2021-03-28 23:00:24.949829] Expression Analysed: D ∨ ¬B
+[2021-03-28 23:00:25.834119] Expression Analysed: ¬(D ∨ C)
+[2021-03-28 23:00:26.581014] Expression Analysed: R ∨ ¬R
+[2021-03-28 23:00:27.449334] Expression Analysed: F → F
+[2021-03-28 23:00:28.446244] Expression Analysed: ¬R ∧ F
+[2021-03-28 23:00:29.459398] Expression Analysed: ¬(A ∨ D)
+[2021-03-28 23:00:30.263377] Expression Analysed: ¬E ∧ R
+[2021-03-28 23:00:30.928509] Expression Analysed: F ∧ ¬F
+[2021-03-28 23:00:31.684007] Expression Analysed: ¬¬¬¬F
+[2021-03-28 23:00:32.456846] Expression Analysed: ¬(E ∧ Q)
+[2021-03-28 23:00:33.314925] Expression Analysed: D → S
+[2021-03-28 23:00:34.238684] Expression Analysed: C ∧ ¬A
+[2021-03-28 23:04:28.776545] 1 Unique Users
+[2021-03-28 23:19:49.707473] Expression Analysed: s xor t
+[2021-03-30 13:04:40.284864] 1 Unique Users
+[2021-03-30 13:09:13.426010] 1 Unique Users
+[2021-03-30 13:09:22.558062] 2 Unique Users
+[2021-03-30 13:09:38.250769] 3 Unique Users
+[2021-03-30 13:09:43.307879] Expression Analysed: 
+[2021-03-30 13:09:45.194360] Expression Analysed: (¬¬D → ¬C) ∧ E ∧ ¬S
+[2021-03-30 13:09:47.337952] Expression Analysed: (¬¬D → ¬C) ∧ E ∧ ¬S
+[2021-03-30 13:09:50.232655] Expression Analysed: 
+[2021-03-30 13:10:19.964686] Expression Analysed: 
+[2021-03-30 13:10:20.947179] Expression Analysed: (¬R ? ¬¬F : C)
+[2021-03-30 13:11:08.699195] Question: Q22.1 Form a expression that satisfies this Karnaugh Map:, User Response: a -> b, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:11:46.196131] Question: Q22.2 Remove → from: A → B, User Response: not (a and not b), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:12:04.205884] Question: Q22.3 Move ¬ inwards in all brackets: ¬(A ∧ ¬B), User Response: not a or not not b, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:12:16.390872] Question: Q22.4 Remove redundant negation(s) from: ¬A ∨ ¬¬B, User Response: not not not a or b, Feedback: Entered Expression is equivalent but there are redundant negations
+[2021-03-30 13:12:56.420261] Question: Q23.1 Remove Ternary operator(s) from: (P ? ¬B : E ∧ C), User Response: p and not b or not p and e and c, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:14:08.300170] Question: Q24.1 Form a expression that satisfies this Truth Table:, User Response: a and b and c or (not a and (b xor c)), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:15:08.002566] Question: Q24.2 Remove ⊕ from: A ∧ B ∧ C ∨ ¬A ∧ (B ⊕ C), User Response: a and b and c or (not a and (b and not c or not b and c)), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:15:28.562345] Expression Analysed: A ∧ B ∧ C ∨ ¬A ∧ (B ∧ ¬C ∨ ¬B ∧ C) 
+[2021-03-30 13:15:36.295060] Question: Q24.3 Convert the following to CNF: A ∧ B ∧ C ∨ ¬A ∧ (B ∧ ¬C ∨ ¬B ∧ C), User Response: ¬A ∧ ¬B ∧ C ∨ ¬A ∧ B ∧ ¬C ∨ A ∧ B ∧ C, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:23:52.964970] 1 Unique Users
+[2021-03-30 13:25:01.372626] Question: Q1.1 Form a expression that satisfies this Truth Table:, User Response:  ¬A ∧ B ∧ ¬C ∨ A ∧ ¬B ∧ ¬C ∨ A ∧ ¬B ∧ C ∨ A ∧ B ∧ C , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:26:38.358849] Question: Q2.1 Form a expression that satisfies this Karnaugh Map:, User Response: B or not A and not C and not D, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:26:51.797811] Question: Q3.1 Remove ↔ from: D ∨ (F ↔ P), User Response:  D ∨ (F → P) ∧ (P → F) , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:27:31.805022] Question: Q3.2 Remove → from: D ∨ (F → P) ∧ (P → F), User Response:  D ∨ (F → P) ∧ (P → F) , Feedback: Entered Expression is equivalent but there are single implication(s)
+[2021-03-30 13:27:43.485059] Question: Q3.2 Remove → from: D ∨ (F → P) ∧ (P → F), User Response: D ∨ (¬F ∨ P) ∧ (¬P ∨ F) , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:28:33.708220] Expression Analysed:  D ∨ (¬F ∨ P) ∧ (¬P ∨ F)
+[2021-03-30 13:28:39.194449] Question: Q3.3 Convert the following to CNF: D ∨ (¬F ∨ P) ∧ (¬P ∨ F), User Response: F ∧ P ∨ D ∨ ¬F ∧ ¬P, Feedback: Entered Expression is equivalent but it is not in CNF
+[2021-03-30 13:28:46.707258] Expression Analysed:  D ∨ (¬F ∨ P) ∧ (¬P ∨ F)
+[2021-03-30 13:28:54.148581] Question: Q3.3 Convert the following to CNF: D ∨ (¬F ∨ P) ∧ (¬P ∨ F), User Response: (D ∨ ¬F ∨ P) ∧ (D ∨ F ∨ ¬P), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-30 13:29:21.692743] Expression Analysed:  D ∨ (¬F ∨ P) ∧ (¬P ∨ F)
