@@ -405,3 +405,31 @@
 [2021-03-30 13:28:46.707258] Expression Analysed:  D ∨ (¬F ∨ P) ∧ (¬P ∨ F)
 [2021-03-30 13:28:54.148581] Question: Q3.3 Convert the following to CNF: D ∨ (¬F ∨ P) ∧ (¬P ∨ F), User Response: (D ∨ ¬F ∨ P) ∧ (D ∨ F ∨ ¬P), Feedback: Well done, your answer is correct :) Please click 'Next Question'
 [2021-03-30 13:29:21.692743] Expression Analysed:  D ∨ (¬F ∨ P) ∧ (¬P ∨ F)
+[2021-03-31 16:29:25.394179] 1 Unique Users
+[2021-03-31 16:29:27.252647] Expression Analysed: 
+[2021-03-31 16:29:29.338179] Expression Analysed: (¬¬Q ∨ ¬¬E) ∧ (Q → R)
+[2021-03-31 16:29:30.373355] Expression Analysed: (¬¬Q ∨ ¬¬E) ∧ (Q → R)
+[2021-03-31 16:29:31.041956] Expression Analysed: (¬¬Q ∨ ¬¬E) ∧ (Q → R)
+[2021-03-31 16:29:31.783983] Expression Analysed: (¬¬Q ∨ ¬¬E) ∧ (Q → R)
+[2021-03-31 16:29:36.733174] Expression Analysed: a
+[2021-03-31 16:29:37.647537] Expression Analysed: a
+[2021-03-31 16:29:38.214823] Expression Analysed: (E ? ¬P ∧ B : D)
+[2021-03-31 16:30:01.083889] Question: Q1.1 Form a expression that satisfies this Karnaugh Map:, User Response: A ∧ B ∧ C ∨ ¬A ∧ ¬B ∧ C ∧ D ∨ ¬A ∧ ¬C ∧ ¬D , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 16:30:29.170923] Question: Q2.1 Form a expression that satisfies this Truth Table:, User Response:  ¬A ∧ ¬B ∧ ¬C ∧ ¬D ∨ ¬A ∧ ¬B ∧ ¬C ∧ D ∨ ¬A ∧ B ∧ ¬C ∧ D ∨ ¬A ∧ B, Feedback: Expression is not equivalent, for example when B is true and A, C, D are false
+[2021-03-31 16:31:25.612280] 1 Unique Users
+[2021-03-31 16:31:50.876027] Question: Q1.1 Form a expression that satisfies this Truth Table:, User Response: ¬A ∧ ¬B ∧ ¬C ∧ ¬D ∨ ¬A ∧ ¬B ∧ ¬C ∧ D ∨ ¬A ∧ B ∧ ¬C ∧ D ∨ ¬A ∧ B ∧ C ∧ D ∨ A ∧ ¬B ∧ C ∧ D ∨ A, Feedback: Expression is not equivalent, for example when A is true and B, C, D are false
+[2021-03-31 17:10:07.525797] 1 Unique Users
+[2021-03-31 17:10:21.351199] Question: Q2.1 Form a expression that satisfies this Truth Table:, User Response: ¬A ∧ ¬B ∧ C ∨ A ∧ ¬C ∧ D ∨ B ∧ C ∧ ¬D ∨ A ∧ ¬B ∧ D ∨ ¬A ∧ ¬D , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:17:09.789303] Question: Q4.1 Form a expression that satisfies this Karnaugh Map:, User Response: A ∧ B ∧ C ∨ ¬A ∧ ¬B ∧ ¬C ∨ C ∧ ¬D ∨ A ∧ B ∧ ¬D ∨ ¬A ∧ ¬B ∧ ¬D , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:17:20.696971] Question: Q5.1 Form a expression that satisfies this Truth Table:, User Response: B ∧ ¬C ∧ ¬D ∨ A ∧ B ∧ ¬D ∨ A ∧ B ∧ C ∨ ¬A ∧ ¬B ∧ ¬C ∧ D , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:17:31.863474] Question: Q6.1 Remove redundant negation(s) from: (S → ¬F ? ¬¬R : ¬¬S), User Response:  (S → ¬F ? R : S) , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:17:44.556038] Question: Q6.2 Remove Ternary operator(s) from: (S → ¬F ? R : S), User Response: (S → ¬F) ∧ R ∨ ¬(S → ¬F) ∧ S , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:17:52.746002] Question: Q6.3 Remove → from: (S → ¬F) ∧ R ∨ ¬(S → ¬F) ∧ S, User Response:  (¬S ∨ ¬F) ∧ R ∨ ¬(¬S ∨ ¬F) ∧ S , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:18:02.037299] Question: Q6.4 Move ¬ inwards in all brackets: (¬S ∨ ¬F) ∧ R ∨ ¬(¬S ∨ ¬F) ∧ S, User Response: (¬S ∨ ¬F) ∧ R ∨ ¬¬S ∧ ¬¬F ∧ S , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:18:09.339447] Question: Q6.5 Remove redundant negation(s) from: (¬S ∨ ¬F) ∧ R ∨ ¬¬S ∧ ¬¬F ∧ S, User Response: (¬S ∨ ¬F) ∧ R ∨ S ∧ F ∧ S , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:18:19.128510] Question: Q6.6 Convert the following to CNF: (¬S ∨ ¬F) ∧ R ∨ S ∧ F ∧ S, User Response: (F ∨ R) ∧ (R ∨ S), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:22:06.089741] Question: Q7.1 Form a expression that satisfies this Karnaugh Map:, User Response: A and D or not A.B.-C.-D or -D.C.A.B or C.=A.-B, Feedback: Expression is not equivalent, for example when C is true and =A, A, B, D are false
+[2021-03-31 17:22:21.976952] Question: Q7.1 Form a expression that satisfies this Karnaugh Map:, User Response: A and D or not A.B.-C.-D or -D.C.A.B or C.-A.-B, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:24:05.434883] Question: Q7.1 Form a expression that satisfies this Karnaugh Map:, User Response: A and D or not A.B.-C or -D.C.A.B or C.-A.-B, Feedback: Expression is not equivalent, for example when B, D are true and A, C are false
+[2021-03-31 17:24:21.231639] Question: Q7.1 Form a expression that satisfies this Karnaugh Map:, User Response: A and D or not A.B.-C.-D or C.A.B or C.-A.-B, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 17:25:39.230568] Question: Q9.1 Form a expression that satisfies this Truth Table:, User Response: A ∧ C ∨ B ∧ D ∨ ¬A ∧ B ∧ ¬C ∨ ¬B ∧ C ∨ ¬A ∧ ¬B ∧ ¬D , Feedback: Well done, your answer is correct :) Please click 'Next Question'

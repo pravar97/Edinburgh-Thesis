@@ -3,7 +3,7 @@ from generators import *
 import json
 from uuid import uuid4
 from flask import Flask, render_template, request
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, validators
 from werkzeug.utils import redirect
 from wtforms import StringField, SubmitField
 from flask_bootstrap import Bootstrap
@@ -124,7 +124,7 @@ class expressionForm(FlaskForm):
 
 class QuestionsForm(FlaskForm):
     #  Set up buttons and text boxes
-    input = StringField(' ')
+    input = StringField(' ', render_kw={"placeholder": "For example: (a or b) and (c -> d)"})
     submit = SubmitField('Enter')
     see = SubmitField('See sample solution')
     next = SubmitField('Next Question')
@@ -177,10 +177,12 @@ def expressionAnalyser():
             if form.genRan.data:  # If its the random expression gen button
                 astTree = genRanTree(15)  # Get a random tree
                 form.input.data = tree2str(astTree)  # Set the textbox to that random expression
-
+            if len(form.input.data) > 100:
+                raise Exception("Input is too large too handle")
             tokens = tokenize(form.input.data)  # Make a list of tokens based on textbox input
             if len(tokens) == 0:
                 raise Exception("Input Field is empty")
+
             parser = Parser(tokens)
             tree = parser.parse()  # Make a tree from the tokens list
 
@@ -269,12 +271,12 @@ def questions():
         return rd('/choose_question_difficulty')
 
     if cur_question[-1] == 'tt':
-        q = ['Form a expression that satisfies this Truth Table:']
+        q = ['Form an expression that satisfies this Truth Table:']
         table = cur_question[0]
         solution = cur_question[1]
         stage = -1
     elif cur_question[-1] == 'km':
-        q = ['Form a expression that satisfies this Karnaugh Map:']
+        q = ['Form an expression that satisfies this Karnaugh Map:']
         table = cur_question[0]
         solution = cur_question[1]
         stage = -1
@@ -316,6 +318,8 @@ def questions():
 
             if form.submit.data:  # If enter button is clicked
 
+                if len(form.input.data) > 100:
+                    raise Exception("Input is too large too handle")
                 tokens = tokenize(form.input.data)  # Get tokens of user input
                 if len(tokens) == 0:
                     raise Exception("Input Field is empty")

@@ -130,6 +130,12 @@ def genTruthTable(difficulty):
                 solution = subtree
             else:
                 solution = BinOp(solution, '∨', subtree)
+    solutionCNF = simCNF(solution)
+    solutionDNF = simDNF(solution)
+    if len(tree2str(solutionCNF)) > len(tree2str(solutionDNF)):
+        solution = solutionDNF
+    else:
+        solution = solutionCNF
     pdTable = pd.DataFrame(output)  # Create a table data structure from truth table dictionary
     table = pdTable.head(len(output['Result'])).to_html(col_space=50, classes='Table')  # Generate HTML
 
