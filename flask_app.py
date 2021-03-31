@@ -3,7 +3,7 @@ from generators import *
 import json
 from uuid import uuid4
 from flask import Flask, render_template, request
-from flask_wtf import FlaskForm, validators
+from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
 from wtforms import StringField, SubmitField
 from flask_bootstrap import Bootstrap
@@ -185,7 +185,7 @@ def expressionAnalyser():
 
             parser = Parser(tokens)
             tree = parser.parse()  # Make a tree from the tokens list
-
+            form.input.data = tree2str(tree)
             if form.conCNF.data:  # If the convert to CNF button is clicked
                 steps = convertTo('CNF', tree)
 
@@ -325,6 +325,7 @@ def questions():
                     raise Exception("Input Field is empty")
                 user_parser = Parser(tokens)
                 user_tree = user_parser.parse()  # Parse the user input
+                form.input.data = tree2str(user_tree)
                 f = getUserData('f', '')
                 pos_wrongs = {
                     -1: 'Expression is not equivalent, for example when ',

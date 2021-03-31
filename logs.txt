@@ -433,3 +433,31 @@
 [2021-03-31 17:24:05.434883] Question: Q7.1 Form a expression that satisfies this Karnaugh Map:, User Response: A and D or not A.B.-C or -D.C.A.B or C.-A.-B, Feedback: Expression is not equivalent, for example when B, D are true and A, C are false
 [2021-03-31 17:24:21.231639] Question: Q7.1 Form a expression that satisfies this Karnaugh Map:, User Response: A and D or not A.B.-C.-D or C.A.B or C.-A.-B, Feedback: Well done, your answer is correct :) Please click 'Next Question'
 [2021-03-31 17:25:39.230568] Question: Q9.1 Form a expression that satisfies this Truth Table:, User Response: A ∧ C ∨ B ∧ D ∨ ¬A ∧ B ∧ ¬C ∨ ¬B ∧ C ∨ ¬A ∧ ¬B ∧ ¬D , Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:04:03.764925] Expression Analysed: a or b -> r
+[2021-03-31 22:04:17.896769] Expression Analysed: AandB or t
+[2021-03-31 22:11:21.246870] Expression Analysed: AANDB ∨ T
+[2021-03-31 22:13:05.653554] Expression Analysed: AANDB ∨ T
+[2021-03-31 22:13:21.278014] Expression Analysed: a or b -> g
+[2021-03-31 22:14:01.872726] 1 Unique Users
+[2021-03-31 22:18:51.987294] Expression Analysed: 
+[2021-03-31 22:18:52.866640] Expression Analysed: 
+[2021-03-31 22:18:53.589917] Expression Analysed: 
+[2021-03-31 22:18:54.389878] Expression Analysed: 
+[2021-03-31 22:18:55.354375] Expression Analysed: R ↔ ¬¬R
+[2021-03-31 22:19:44.183478] Expression Analysed: R ↔ ¬¬R
+[2021-03-31 22:19:45.009694] Expression Analysed: ¬¬C ∨ E → D ∨ ¬¬B
+[2021-03-31 22:21:41.140857] Expression Analysed: 
+[2021-03-31 22:21:42.709498] Expression Analysed: 
+[2021-03-31 22:32:28.832099] Question: Q45.1 Remove redundant negation(s) from: ¬R ∧ P ∨ ¬(¬¬B ⊕ ¬¬S), User Response: not r and p or not(b xor s), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:32:35.029490] Question: Q45.1 Remove redundant negation(s) from: ¬R ∧ P ∨ ¬(¬¬B ⊕ ¬¬S), User Response: not r and p or not(b xor s), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:33:31.049683] 1 Unique Users
+[2021-03-31 22:33:36.289125] Question: Q1.1 Form an expression that satisfies this Karnaugh Map:, User Response: A, Feedback: Expression is not equivalent, for example when A is false
+[2021-03-31 22:33:41.981843] Question: Q1.1 Form an expression that satisfies this Karnaugh Map:, User Response: ¬A, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:33:49.830945] Question: Q2.1 Remove → from: D → C, User Response: D → C, Feedback: Entered Expression is equivalent but there are single implication(s)
+[2021-03-31 22:34:00.176939] Question: Q2.1 Remove → from: D → C, User Response: ¬D ∨ C, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:34:14.156676] Question: Q3.1 Form an expression that satisfies this Truth Table:, User Response: ¬(A ⊕ B), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:34:30.838469] Question: Q3.2 Remove ⊕ from: ¬(A ⊕ B), User Response: ¬(A ∧ ¬B ∨ ¬A ∨ B), Feedback: Expression is not equivalent, for example when A, B are false
+[2021-03-31 22:34:43.980349] Question: Q3.2 Remove ⊕ from: ¬(A ⊕ B), User Response: ¬(A ∧ ¬B ∨ ¬A ∧ B), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:35:15.402984] Question: Q3.3 Move ¬ inwards in all brackets: ¬(A ∧ ¬B ∨ ¬A ∧ B), User Response: (¬A ∨ B) ∧ (A ∨ ¬B), Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:35:24.299244] Question: Q4.1 Form an expression that satisfies this Truth Table:, User Response: ¬A ∧ ¬B, Feedback: Expression is not equivalent, for example when A, B are false
+[2021-03-31 22:35:31.365291] Question: Q4.1 Form an expression that satisfies this Truth Table:, User Response: A ∨ B, Feedback: Well done, your answer is correct :) Please click 'Next Question'

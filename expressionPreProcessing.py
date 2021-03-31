@@ -274,7 +274,7 @@ def tokenize(stream):
             token = ""  # Reset for next atom
             i += 2  # Increment loop counter more to cover additional chars in this notation
 
-        elif c == '^' or c == '⊕':
+        elif c == '⊕':
             if token not in tokens:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
