@@ -250,6 +250,7 @@ def questionsDifficulty():
             difficulty = 25
 
         setUserData('cur_question', genQuestion(difficulty))
+        setUserData('next_question', None)
         setUserData('Q#', getUserData('Q#', 0) + 1)
         setUserData('SQ#', 1)
         setUserData('difficulty', difficulty)

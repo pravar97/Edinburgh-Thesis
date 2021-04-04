@@ -466,3 +466,6 @@
 [2021-04-04 13:50:50.670920] 1 Unique Users
 [2021-04-04 13:50:53.107618] Expression Analysed: 
 [2021-04-04 13:50:53.699823] Expression Analysed: E → ¬(¬¬S → B) ∧ S
+[2021-04-04 14:15:31.451824] 2 Unique Users
+[2021-04-04 14:19:20.811859] 1 Unique Users
+[2021-04-04 14:20:33.884722] Question: Q2.1 Form an expression that satisfies this Truth Table:, User Response: ¬¬A ∧ B, Feedback: Well done, your answer is correct :) Please click 'Next Question'
