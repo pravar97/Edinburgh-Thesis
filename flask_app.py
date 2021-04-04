@@ -115,10 +115,10 @@ class expressionForm(FlaskForm):
     #  Set up buttons and text boxes
     input = StringField(' ', render_kw={"placeholder": "For example: (a or b) and (c -> d)"})
     submit = SubmitField('Display Truth Table')
+    getKmap = SubmitField('Display Karnaugh Map')
     genRan = SubmitField('Generate Random Expression')
     conCNF = SubmitField('Convert to CNF')
     conDNF = SubmitField('Convert to DNF')
-    getKmap = SubmitField('Display Karnaugh Map')
     goHome = SubmitField('Return to Homepage')
 
 

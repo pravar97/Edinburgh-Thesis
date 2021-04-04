@@ -461,3 +461,8 @@
 [2021-03-31 22:35:15.402984] Question: Q3.3 Move ¬ inwards in all brackets: ¬(A ∧ ¬B ∨ ¬A ∧ B), User Response: (¬A ∨ B) ∧ (A ∨ ¬B), Feedback: Well done, your answer is correct :) Please click 'Next Question'
 [2021-03-31 22:35:24.299244] Question: Q4.1 Form an expression that satisfies this Truth Table:, User Response: ¬A ∧ ¬B, Feedback: Expression is not equivalent, for example when A, B are false
 [2021-03-31 22:35:31.365291] Question: Q4.1 Form an expression that satisfies this Truth Table:, User Response: A ∨ B, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-03-31 22:53:25.547400] 1 Unique Users
+[2021-04-04 12:44:32.813751] 1 Unique Users
+[2021-04-04 13:50:50.670920] 1 Unique Users
+[2021-04-04 13:50:53.107618] Expression Analysed: 
+[2021-04-04 13:50:53.699823] Expression Analysed: E → ¬(¬¬S → B) ∧ S

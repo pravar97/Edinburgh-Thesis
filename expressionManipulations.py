@@ -31,7 +31,8 @@ def tree2str(tree):
         return "(" + tree2str(tree.lhs) + " ? " + tree2str(tree.mid) + " : " + tree2str(tree.rhs) + ")"
     else:
         return str(tree)
-    
+
+
 def rmTO(tree):
     if isinstance(tree, NegOP):
         return NegOP(rmTO(tree.stmt))
@@ -51,6 +52,9 @@ def rmXOR(tree):
     if isinstance(tree, NegOP):
         return NegOP(rmXOR(tree.stmt))
 
+    if isinstance(tree, TriOp):
+        return TriOp(rmXOR(tree.lhs), rmXOR(tree.mid), rmXOR(tree.rhs))
+
     if isinstance(tree, BinOp):  # Apply double implication equivalent
         if tree.op == '⊕':
             a = rmXOR(tree.lhs)
@@ -64,6 +68,9 @@ def rmDI(tree):
     if isinstance(tree, NegOP):
         return NegOP(rmDI(tree.stmt))
 
+    if isinstance(tree, TriOp):
+        return TriOp(rmDI(tree.lhs), rmDI(tree.mid), rmDI(tree.rhs))
+
     if isinstance(tree, BinOp):  # Apply double implication equivalent
         if tree.op == '↔':
             a = rmDI(tree.lhs)
@@ -76,6 +83,11 @@ def rmDI(tree):
 def rmSI(tree):
     if isinstance(tree, NegOP):
         return NegOP(rmSI(tree.stmt))
+
+    if isinstance(tree, TriOp):
+        return TriOp(rmSI(tree.lhs), rmSI(tree.mid), rmSI(tree.rhs))
+
+
     if isinstance(tree, BinOp):  # Apply single implication equivalent
         if tree.op == '→':
             a = rmSI(tree.lhs)
@@ -292,7 +304,7 @@ def simDNF(tree):
 def convertTo(form, astTree, do_presteps=True, return_tree=False, return_tree_and_steps=False):
     if form == 'CNF':
         op = '∧'
-        opp_op = '∨'
+        opp_op = ''
     else:
         opp_op = '∧'
         op = '∨'

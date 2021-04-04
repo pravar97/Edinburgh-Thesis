@@ -37,42 +37,6 @@ def genRanTree(s=12):
         return BinOp(a, op[2], b)
 
 
-
-# def genRanTree(s):
-#     if s > 19:  # Base case: return a single atom
-#         return 'PQRSABCDEF'[random.randint(0, 9)]  # Randomly select an atom
-#     elif s > 14:
-#         return NegOP('PQRSABCDEF'[random.randint(0, 9)])
-#     elif s > 13:
-#         ran = random.randint(0, 2)
-#     elif s > 6:
-#         ran = random.randint(0, 3)
-#     elif s > 0:
-#         ran = random.randint(0, 5)
-#     else:
-#         ran = random.randint(0, 6)
-#
-#     if ran == 6:
-#         a = genRanTree(s + 20)
-#         b = genRanTree(s + 20)
-#         c = genRanTree(s + 20)
-#         return TriOp(a, b, c)
-#     elif ran > 3:
-#         a = genRanTree(s + 14)
-#         b = genRanTree(s + 14)
-#         return BinOp(a, ['↔', '⊕'][ran % 2], b)
-#     elif ran == 3:
-#         a = genRanTree(s + 7)
-#         b = genRanTree(s + 7)
-#         return BinOp(a, '→', b)
-#     elif ran > 0:
-#         a = genRanTree(s + 6)
-#         b = genRanTree(s + 6)
-#         return BinOp(a, ['∨', '∧'][ran % 2], b)
-#     else:
-#         return NegOP(genRanTree(s + 1))
-
-
 def genQuestion(difficulty):
     choice = random.randint(0,2)
     if not choice:

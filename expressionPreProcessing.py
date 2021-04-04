@@ -20,12 +20,12 @@ class Parser:
         if c == token:
             self.i += 1
         else:
-            raise Exception("Expected " + c + " but received " + token)
+            raise Exception("Syntax Error: Expected " + c + " but received " + token)
 
     def parse(self):
         output = self.parseStmt()  # Get root node of tree, using LL recursive parsing
         if self.i < len(self.tokens):
-            raise Exception("Additional tokens at end of expression are invalid")
+            raise Exception("Syntax Error: Additional tokens at end of expression are invalid")
         return output
 
     def parseStmt(self):
@@ -173,14 +173,12 @@ class Parser:
     def parseIdent(self):
         token = self.getToken()
         if self.end:
-            raise Exception("Unexpected end of expression")
+            raise Exception("Syntax Error: Unexpected end of expression")
         if token not in ['(', ')', '¬', '∧', '∨', '→', '↔', '?', ':', '⊕']:
-            if token == 'Result':
-                token = 'result'
             self.i += 1
             return token
         else:
-            raise Exception("Expected Identifier but got " + token)
+            raise Exception("Syntax Error: Expected Identifier but got " + token)
 
 
 def tokenize(stream):
@@ -214,9 +212,10 @@ def tokenize(stream):
             c4 = 'a'
 
         if c == '\\' and c2 == '/' or c == '|' and c2 == '|':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("∨")  # Add operator
@@ -224,18 +223,20 @@ def tokenize(stream):
             token = ""  # Reset for next atom
             i += 1  # Increment loop counter more to cover additional chars in this notation
         elif c == '+' or c == '∨' or c == '|' or c == 'V':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("∨")  # Add operator
 
             token = ""  # Reset for next atom
         elif c == 'O' and not (' ' + token)[-1].isalpha() and c2 == 'R' and not c3.isalpha():
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("∨")  # Add operator
@@ -244,9 +245,10 @@ def tokenize(stream):
             i += 1  # Increment loop counter more to cover additional chars in this notation
 
         elif c == '/' and c2 == '\\' or c == '&' and c2 == '&':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("∧")  # Add operator
@@ -255,9 +257,10 @@ def tokenize(stream):
             i += 1  # Increment loop counter more to cover additional chars in this notation
 
         elif c == '.' or c == '*' or c == '∧' or c == '&':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("∧")  # Add operator
@@ -265,9 +268,10 @@ def tokenize(stream):
             token = ""  # Reset for next atom
 
         elif c == 'A' and not (' ' + token)[-1].isalpha() and c2 == 'N' and c3 == 'D' and not c4.isalpha():
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("∧")  # Add operator
@@ -275,9 +279,10 @@ def tokenize(stream):
             i += 2  # Increment loop counter more to cover additional chars in this notation
 
         elif c == '⊕':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("⊕")  # Add operator
@@ -285,9 +290,10 @@ def tokenize(stream):
             token = ""  # Reset for next atom
 
         elif c == 'X' and not (' ' + token)[-1].isalpha() and c2 == 'O' and c3 == 'R' and not c4.isalpha():
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("⊕")  # Add operator
@@ -295,9 +301,10 @@ def tokenize(stream):
             i += 2  # Increment loop counter more to cover additional chars in this notation
 
         elif c == '→':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:  # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("→")  # Add operator
@@ -305,9 +312,10 @@ def tokenize(stream):
             token = ""  # Reset for next atom
 
         elif c == '↔':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("↔")  # Add operator
@@ -315,9 +323,10 @@ def tokenize(stream):
             token = ""  # Reset for next atom
 
         elif c == '<' and (c2 == '-' or c2 == '=') and c3 == '>':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("↔")  # Add operator
@@ -326,9 +335,10 @@ def tokenize(stream):
             token = ""  # Reset for next atom
 
         elif (c == '-' or c == '=') and c2 == '>':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("→")  # Add operator
@@ -337,45 +347,50 @@ def tokenize(stream):
             token = ""  # Reset for next atom
 
         elif c == '(':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("(")  # Add operator
 
             token = ""  # Reset for next atom
         elif c == ')':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append(")")  # Add operator
 
             token = ""  # Reset for next atom
         elif c == '?':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("?")  # Add operator
 
             token = ""  # Reset for next atom
         elif c == ':':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append(":")  # Add operator
 
             token = ""  # Reset for next atom
         elif c == '!' or c == '~' or c == '-' or c == '¬':
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("¬")  # Add operator
@@ -383,18 +398,20 @@ def tokenize(stream):
             token = ""  # Reset for next atom
         elif c == 'N' and not (' ' + token)[
             -1].isalpha() and c2 == 'O' and c3 == 'T' and not c4.isalpha():
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
             tokens.append(token)  # Add atom preceding current operator
             tokens.append("¬")  # Add operator
             token = ""  # Reset for next atom
             i += 2  # Increment loop counter more to cover additional chars in this notation
         elif c.isspace():
-            if token not in tokens:
+            if token not in tokens and token:
                 identcount += 1
             if identcount > 13:   # Enforce bounds of number of atoms
+
                 raise Exception("Too many atoms!")
 
             tokens.append(token)  # Add atom preceding current operator
@@ -403,7 +420,8 @@ def tokenize(stream):
         else:
             token += c
         i += 1  # Increment loop counter
-    if token not in tokens:
+
+    if token not in tokens and token:
         identcount += 1
     if identcount > 13:   # Enforce bounds of number of atoms
         raise Exception("Too many atoms!")

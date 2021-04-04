@@ -74,17 +74,23 @@ class TestStringMethods(unittest.TestCase):
         expected = {'A': [0, 1], 'Result': [0, 1]}
         self.assertDictEqual(expected, actual)
 
-    def test_makeSeq(self):
+    def test_makeSeq1(self):
         tree = ast('A')
         actual = tree.makeSeq(2)
         expected = ['0', '1']
         self.assertEqual(expected, actual)
 
+    def test_makeSeq2(self):
+        tree = ast('A')
+        actual = tree.makeSeq(4)
+        expected = ['00', '01', '11', '10']
+        self.assertEqual(expected, actual)
 
-
-
-
-
+    def test_printKMap(self):
+        tree = ast(BinOp('A', '∨', 'B'))
+        actual = tree.printKMap()
+        expected = ({'0': [0, 1], '1': [1, 1]}, ['0', '1'], ['A'], ['B'])
+        self.assertEqual(expected, actual)
 
 if __name__ == '__main__':
     unittest.main()
