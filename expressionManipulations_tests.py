@@ -157,6 +157,31 @@ class TestStringMethods(unittest.TestCase):
         expected = 'A'
         self.assertEqual(expected, actual)
 
+    def test_rmB1(self):
+        actual = tree2str(rmB(NegOP(BinOp('B', '∨', 'C'))))
+        expected = '¬B ∧ ¬C'
+        self.assertEqual(expected, actual)
+
+    def test_rmB2(self):
+        actual = tree2str(rmB(NegOP(BinOp('B', '∧', 'C'))))
+        expected = '¬B ∨ ¬C'
+        self.assertEqual(expected, actual)
+
+    def test_rmB3(self):
+        actual = tree2str(rmB(NegOP('A')))
+        expected = '¬A'
+        self.assertEqual(expected, actual)
+
+    def test_rmB4(self):
+        actual = tree2str(rmB(BinOp('B', '∨', 'C')))
+        expected = 'B ∨ C'
+        self.assertEqual(expected, actual)
+
+    def test_rmB5(self):
+        actual = tree2str(rmB('A'))
+        expected = 'A'
+        self.assertEqual(expected, actual)
+
     def test_rmN1(self):
         actual = tree2str(rmN(NegOP(NegOP('A'))))
         expected = 'A'
@@ -293,6 +318,66 @@ class TestStringMethods(unittest.TestCase):
         actual = simDNF(BinOp('A', '∨', NegOP('A')))
         expected = 'Expression is a tautology'
         self.assertEqual(expected, actual)
+
+    def test_simDNF4(self):
+        actual = tree2str(simDNF(BinOp('A', '∨', 'B')))
+        expected = ['A ∨ B', 'B ∨ A']
+        self.assertIn(actual, expected)
+
+    def test_convertTo1(self):
+        actual = convertTo('CNF', 'A', do_presteps=True, return_tree=True)
+        expected = 'A'
+        self.assertEqual(expected, actual)
+
+    def test_convertTo2(self):
+        actual = convertTo('DNF', 'A', do_presteps=True, return_tree=True)
+        expected = 'A'
+        self.assertEqual(expected, actual)
+
+    def test_convertTo3(self):
+        actual = convertTo('CNF', NegOP(NegOP(TriOp(NegOP('A'), 'A', 'A'))), do_presteps=True, return_tree=True)
+        expected = 'A'
+        self.assertEqual(expected, actual)
+
+    def test_convertTo4(self):
+        actual = convertTo('CNF', BinOp(NegOP('A'), '⊕', 'A'), do_presteps=True, return_tree=True)
+        expected = 'Expression is a tautology'
+        self.assertEqual(expected, actual)
+
+    def test_convertTo5(self):
+        actual = convertTo('CNF', BinOp('A', '↔', 'A'), do_presteps=True, return_tree=True)
+        expected = 'Expression is a tautology'
+        self.assertEqual(expected, actual)
+
+    def test_convertTo6(self):
+        actual = convertTo('CNF', BinOp(NegOP('A'), '→', 'A'), do_presteps=True, return_tree=True)
+        expected = 'A'
+        self.assertEqual(expected, actual)
+
+    def test_convertTo7(self):
+        actual = tree2str(convertTo('CNF', NegOP(NegOP(NegOP(BinOp(NegOP('A'), '∧', 'A')))), do_presteps=True, return_tree=True))
+        expected = 'Expression is a tautology'
+        self.assertEqual(expected, actual)
+
+
+    def test_convertTo8(self):
+        actual = convertTo('CNF', NegOP(NegOP('A')), do_presteps=False, return_tree_and_steps=True)
+        steps = {'Step': [''], 'Expression': ['¬¬A']}
+        steps['Step'].append('Simplify CNF')
+        steps['Expression'].append('A')
+        pdTable = pd.DataFrame(steps)
+        expected = (pdTable.head(len(steps['Step'])).to_html(col_space=50, classes='Table', index=False, justify='center'), 'A')
+        self.assertEqual(expected, actual)
+
+    def test_convertTo9(self):
+        actual = convertTo('CNF', NegOP(NegOP('A')), do_presteps=False, return_tree_and_steps=False)
+        steps = {'Step': [''], 'Expression': ['¬¬A']}
+        steps['Step'].append('Simplify CNF')
+        steps['Expression'].append('A')
+        pdTable = pd.DataFrame(steps)
+        expected = pdTable.head(len(steps['Step'])).to_html(col_space=50, classes='Table', index=False, justify='center')
+        self.assertEqual(expected, actual)
+
 
 if __name__ == '__main__':
     unittest.main()

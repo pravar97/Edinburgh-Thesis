@@ -68,6 +68,12 @@ class TestStringMethods(unittest.TestCase):
         expected = True
         self.assertEqual(expected, actual)
 
+    def test_isTrue8(self):
+        tree = ast(NegOP('A'), keys={'A': False})
+        actual = tree.isTrue(NegOP('A'))
+        expected = True
+        self.assertEqual(expected, actual)
+
     def test_printTruthTables(self):
         tree = ast('A')
         actual = tree.printTruthTable()

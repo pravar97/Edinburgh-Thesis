@@ -87,7 +87,6 @@ def rmSI(tree):
     if isinstance(tree, TriOp):
         return TriOp(rmSI(tree.lhs), rmSI(tree.mid), rmSI(tree.rhs))
 
-
     if isinstance(tree, BinOp):  # Apply single implication equivalent
         if tree.op == '→':
             a = rmSI(tree.lhs)

@@ -93,20 +93,20 @@ class TestStringMethods(unittest.TestCase):
 
             with self.subTest(diff_text + '_simCNF_isEQ_' + str(i)):
 
-                actual = simCNF(tree)
+                actual = convertTo('CNF', tree, return_tree=True)
                 self.assertTrue(isEQ(actual, tree))
 
             with self.subTest(diff_text + '_simDNF_isEQ_' + str(i)):
 
-                actual = simDNF(tree)
+                actual = convertTo('DNF', tree, return_tree=True)
                 self.assertTrue(isEQ(actual, tree))
 
             with self.subTest(diff_text + '_simCNF_correctForm_' + str(i)):
-                actual = simCNF(tree)
+                actual = convertTo('CNF', tree, return_tree=True)
                 self.assertTrue(is_in_form('CNF', actual))
 
             with self.subTest(diff_text + '_simDNF_correctForm_' + str(i)):
-                actual = simDNF(tree)
+                actual = convertTo('DNF', tree, return_tree=True)
                 self.assertTrue(is_in_form('DNF', actual))
 
 
