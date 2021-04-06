@@ -469,3 +469,7 @@
 [2021-04-04 14:15:31.451824] 2 Unique Users
 [2021-04-04 14:19:20.811859] 1 Unique Users
 [2021-04-04 14:20:33.884722] Question: Q2.1 Form an expression that satisfies this Truth Table:, User Response: ¬¬A ∧ B, Feedback: Well done, your answer is correct :) Please click 'Next Question'
+[2021-04-06 15:58:17.647442] 1 Unique Users
+[2021-04-06 15:58:19.463578] Expression Analysed: 
+[2021-04-06 15:58:20.459359] Expression Analysed: R ↔ ¬¬C
+[2021-04-06 15:58:21.111860] Expression Analysed: ¬B ∨ Q → ¬¬C ∨ ¬Q
