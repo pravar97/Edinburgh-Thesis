@@ -303,7 +303,7 @@ def simDNF(tree):
 def convertTo(form, astTree, do_presteps=True, return_tree=False, return_tree_and_steps=False):
     if form == 'CNF':
         op = '∧'
-        opp_op = ''
+        opp_op = '∨'
     else:
         opp_op = '∧'
         op = '∨'
